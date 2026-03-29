@@ -2,154 +2,335 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CBT OTP Unlock</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>CBT OTP Unlock System - SMAN 1 Sooko</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/js-sha1/0.6.0/sha1.min.js"></script>
 
 <style>
-body {
-  margin: 0;
-  height: 100vh;
-  font-family: -apple-system, BlinkMacSystemFont;
 
-  background:
-    linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.4)),
-    url("background.jpg");
-
-  background-size: cover;
-  background-position: center;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
 }
 
-.container {
-  backdrop-filter: blur(20px);
-  background: rgba(255,255,255,0.08);
-  border-radius: 25px;
-  padding: 30px;
-  width: 90%;
-  max-width: 420px;
-  text-align: center;
-  color: white;
+body{
+min-height:100vh;
+display:flex;
+align-items:center;
+justify-content:center;
+
+background:
+linear-gradient(rgba(0,0,0,0.35),rgba(0,0,0,0.4)),
+url("background.jpg");
+
+background-size:cover;
+background-position:center;
+color:white;
 }
 
-.logo {
-  width: 80px;
-  margin-bottom: 10px;
+/* glass overlay */
+
+.container{
+position:relative;
+z-index:2;
+width:100%;
+max-width:420px;
+padding:15px;
 }
 
-input {
-  width: 100%;
-  padding: 14px;
-  border-radius: 15px;
-  border: none;
-  background: rgba(255,255,255,0.15);
-  color: white;
-  text-align: center;
-  font-size: 18px;
+.card{
+background:rgba(255,255,255,0.08);
+backdrop-filter:blur(25px);
+-webkit-backdrop-filter:blur(25px);
+
+border-radius:28px;
+min-height:80vh;
+
+display:flex;
+flex-direction:column;
+justify-content:space-between;
+
+padding:25px;
+
+box-shadow:
+0 0 20px rgba(0,150,255,0.2),
+0 0 40px rgba(0,150,255,0.1),
+inset 0 0 15px rgba(255,255,255,0.1);
+
+border:1px solid rgba(255,255,255,0.2);
 }
 
-button {
-  margin-top: 10px;
-  width: 100%;
-  padding: 14px;
-  border-radius: 15px;
-  border: none;
-  background: linear-gradient(135deg,#00c6ff,#0072ff);
-  color: white;
-  font-weight: bold;
+/* header */
+
+.header{
+display:flex;
+flex-direction:column;
+align-items:center;
+text-align:center;
+gap:10px;
 }
 
-.status {
-  margin-top: 10px;
+.logo{
+display:flex;
+flex-direction:column;
+align-items:center;
+gap:8px;
 }
 
-.progress {
-  margin-top: 15px;
-  height: 6px;
-  background: rgba(255,255,255,0.1);
-  border-radius: 10px;
-  overflow: hidden;
+.logo img{
+height:50px;
+border-radius:12px;
+background:rgba(255,255,255,0.9);
+padding:5px;
 }
 
-.bar {
-  height: 100%;
-  width: 100%;
-  background: linear-gradient(90deg,#00c6ff,#0072ff);
-  animation: countdown linear forwards;
+.title{
+font-size:20px;
+font-weight:600;
 }
+
+.subtitle{
+font-size:13px;
+opacity:0.8;
+}
+
+/* OTP */
+
+.otpBox{
+flex-grow:1;
+display:flex;
+flex-direction:column;
+justify-content:center;
+text-align:center;
+}
+
+.otp{
+font-size:72px;
+font-weight:700;
+letter-spacing:8px;
+
+text-shadow:
+0 0 6px rgba(255,255,255,0.3),
+0 0 12px rgba(0,150,255,0.3);
+}
+
+.timer{
+margin-top:8px;
+font-size:14px;
+opacity:0.85;
+}
+
+/* progress */
+
+.progress{
+margin-top:15px;
+height:8px;
+background:rgba(255,255,255,0.1);
+border-radius:30px;
+overflow:hidden;
+position:relative;
+}
+
+.bar{
+height:100%;
+width:100%;
+background:linear-gradient(90deg,#00c6ff,#0072ff);
+box-shadow:0 0 10px rgba(0,150,255,0.6);
+position:relative;
+}
+
+/* running light soft */
+
+.bar::after{
+content:"";
+position:absolute;
+top:0;
+left:-60px;
+width:60px;
+height:100%;
+background:rgba(255,255,255,0.5);
+filter:blur(8px);
+animation:runlight 2s linear infinite;
+}
+
+/* grid */
+
+.grid{
+margin-top:15px;
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px;
+}
+
+.info{
+background:rgba(255,255,255,0.08);
+padding:10px;
+border-radius:10px;
+backdrop-filter:blur(10px);
+}
+
+.infoTitle{
+font-size:11px;
+opacity:0.7;
+}
+
+.infoValue{
+font-size:14px;
+font-weight:600;
+margin-top:3px;
+}
+
+/* footer */
+
+.footer{
+margin-top:10px;
+font-size:11px;
+opacity:0.7;
+text-align:center;
+}
+
+/* desktop */
+
+@media(min-width:768px){
+
+.container{max-width:900px;}
+
+.card{min-height:auto;padding:40px;}
+
+.header{
+flex-direction:row;
+justify-content:space-between;
+text-align:left;
+}
+
+.logo{flex-direction:row;}
+
+.title{font-size:28px;}
+
+.otp{
+font-size:110px;
+letter-spacing:10px;
+}
+
+.grid{
+grid-template-columns:repeat(4,1fr);
+gap:15px;
+}
+
+.info{padding:15px;}
+
+.infoTitle{font-size:13px;}
+.infoValue{font-size:18px;}
+
+}
+
+/* animation */
+
+@keyframes runlight{
+0%{transform:translateX(-60px)}
+100%{transform:translateX(400px)}
+}
+
 </style>
 </head>
 
 <body>
 
 <div class="container">
-  <img src="https://sman1sooko.sch.id/media_library/images/397a98c4618261af0d970851901f2b5b.png" class="logo">
-  <h3>CBT Unlock System</h3>
 
-  <input id="otpInput" placeholder="Masukkan OTP (opsional)">
-  <button onclick="manualCheck()">Unlock</button>
+<div class="card">
 
-  <div class="status" id="status">Sinkronisasi OTP...</div>
+<div class="header">
 
-  <div class="progress">
-    <div class="bar" id="bar"></div>
-  </div>
+<div class="logo">
+<img src="https://sman1sooko.sch.id/media_library/images/397a98c4618261af0d970851901f2b5b.png">
+<div>
+<div class="title">CBT OTP Unlock System</div>
+<div class="subtitle">SMAN 1 Sooko Mojokerto • Tim IT</div>
+</div>
+</div>
+
+<div class="subtitle">Sistem Keamanan Ujian</div>
+
+</div>
+
+<div class="otpBox">
+<div id="otp" class="otp">------</div>
+<div id="timer" class="timer"></div>
+</div>
+
+<div class="progress">
+<div id="bar" class="bar"></div>
+</div>
+
+<div class="grid">
+
+<div class="info">
+<div class="infoTitle">Status Server CBT</div>
+<div class="infoValue">ONLINE</div>
+</div>
+
+<div class="info">
+<div class="infoTitle">Mode Ujian</div>
+<div class="infoValue">Secure Mode</div>
+</div>
+
+<div class="info">
+<div class="infoTitle">Perubahan OTP</div>
+<div class="infoValue">60 Detik</div>
+</div>
+
+<div class="info">
+<div class="infoTitle">Monitoring</div>
+<div class="infoValue">CBT Guardian</div>
+</div>
+
+</div>
+
+<div class="footer">
+CBT Monitoring System • SMAN 1 Sooko Mojokerto
+</div>
+
+</div>
+
 </div>
 
 <script>
-let serverOTP = "";
-let lastOTP = "";
 
-// ambil OTP dari server
-async function syncOTP(){
-  try{
-    const res = await fetch("/api/otp");
-    const data = await res.json();
+const SECRET_SALT="SOOKO_HEBAT_2026";
+const INTERVAL=60;
 
-    serverOTP = data.otp;
+function generateOTP(){
+let epoch=Math.floor(Date.now()/1000/INTERVAL);
+let hash=sha1(epoch+SECRET_SALT);
 
-    // kalau OTP berubah → auto unlock trigger
-    if(serverOTP !== lastOTP){
-      document.getElementById("status").innerText = "OTP baru aktif";
-
-      // AUTO MODE (opsional)
-      // langsung unlock tanpa input
-      // unlock();
-
-      lastOTP = serverOTP;
-    }
-
-  }catch{
-    document.getElementById("status").innerText = "Server offline";
-  }
+return (parseInt(hash.substring(0,8),16)%1000000)
+.toString()
+.padStart(6,"0");
 }
 
-// manual input
-function manualCheck(){
-  const input = document.getElementById("otpInput").value;
+function update(){
 
-  if(input === serverOTP){
-    unlock();
-  }else{
-    document.getElementById("status").innerText = "OTP salah";
-  }
+let seconds=Math.floor(Date.now()/1000);
+let remain=INTERVAL-(seconds%INTERVAL);
+
+document.getElementById("timer").innerText=
+"Kode berubah dalam "+remain+" detik";
+
+document.getElementById("otp").innerText=generateOTP();
+
+let percent=(remain/INTERVAL)*100;
+document.getElementById("bar").style.width=percent+"%";
+
 }
 
-// aksi unlock
-function unlock(){
-  document.getElementById("status").innerText = "✅ AKSES DIBUKA";
+setInterval(update,1000);
+update();
 
-  // contoh redirect ke CBT
-  // location.href = "https://cbt.sch.id";
-
-  alert("Akses CBT terbuka");
-}
-
-// sync tiap 3 detik (real-time)
-setInterval(syncOTP,3000);
-syncOTP();
 </script>
 
 </body>
