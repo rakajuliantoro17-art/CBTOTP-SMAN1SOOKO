@@ -1,385 +1,198 @@
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-
-<title>CBT OTP Unlock System - SMAN 1 Sooko</title>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/js-sha1/0.6.0/sha1.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CBT OTP Unlock</title>
 
 <style>
+body {
+  margin: 0;
+  height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, "San Francisco", sans-serif;
 
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
+  background:
+    linear-gradient(rgba(0,0,0,0.25), rgba(0,0,0,0.4)),
+    url("background.jpg");
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-body{
-min-height:100vh;
-display:flex;
-align-items:center;
-justify-content:center;
+/* CONTAINER */
+.container {
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 
-background-image:url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e");
-background-size:cover;
-background-position:center;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 25px;
+  padding: 30px;
+  width: 90%;
+  max-width: 420px;
 
-color:white;
+  text-align: center;
+  color: white;
+
+  box-shadow: 
+    0 0 20px rgba(0, 150, 255, 0.25),
+    0 0 40px rgba(0, 150, 255, 0.15),
+    inset 0 0 15px rgba(255,255,255,0.1);
 }
 
-/* overlay */
-
-body::before{
-content:"";
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-
-background:linear-gradient(135deg,
-rgba(255,0,200,0.35),
-rgba(120,0,255,0.35),
-rgba(0,255,170,0.35));
-
-backdrop-filter:blur(10px);
-z-index:0;
+/* LOGO */
+.logo {
+  width: 80px;
+  margin-bottom: 15px;
+  filter: drop-shadow(0 0 10px rgba(0,150,255,0.5));
 }
 
-/* container */
+/* INPUT */
+input {
+  width: 100%;
+  padding: 14px;
+  border-radius: 15px;
+  border: none;
+  outline: none;
 
-.container{
-position:relative;
-z-index:2;
-width:100%;
-max-width:420px;
-padding:15px;
+  background: rgba(255,255,255,0.15);
+  color: white;
+  text-align: center;
+  font-size: 18px;
+
+  box-shadow: inset 0 0 10px rgba(255,255,255,0.2);
 }
 
-/* card */
+/* BUTTON */
+button {
+  margin-top: 15px;
+  width: 100%;
+  padding: 14px;
+  border-radius: 15px;
+  border: none;
 
-.card{
-background:rgba(255,255,255,0.18);
-backdrop-filter:blur(20px);
+  background: linear-gradient(135deg, #00c6ff, #0072ff);
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
 
-border-radius:24px;
-min-height:80vh;
+  cursor: pointer;
 
-display:flex;
-flex-direction:column;
-justify-content:space-between;
-
-padding:25px;
-
-box-shadow:
-0 20px 50px rgba(0,0,0,0.5),
-inset 0 0 20px rgba(255,255,255,0.2);
-
-border:1px solid rgba(255,255,255,0.3);
+  box-shadow: 0 0 15px rgba(0,150,255,0.6);
 }
 
-/* header */
-
-.header{
-display:flex;
-flex-direction:column;
-align-items:center;
-text-align:center;
-gap:10px;
+/* PROGRESS */
+.progress {
+  margin-top: 20px;
+  height: 8px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: rgba(255,255,255,0.1);
+  position: relative;
 }
 
-.logo{
-display:flex;
-flex-direction:column;
-align-items:center;
-gap:8px;
+.progress-bar {
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg, #00c6ff, #0072ff);
+  animation: countdown linear forwards;
 }
 
-.logo img{
-height:50px;
-border-radius:12px;
-background:rgba(255,255,255,0.85);
-padding:5px;
-box-shadow:0 0 10px rgba(255,255,255,0.3);
+/* running light */
+.progress-bar::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 40px;
+  height: 100%;
+  background: rgba(255,255,255,0.6);
+  filter: blur(10px);
+  animation: lightRun 2s linear infinite;
 }
 
-.title{
-font-size:20px;
-font-weight:600;
+@keyframes lightRun {
+  from { left: -40px; }
+  to { left: 100%; }
 }
 
-.subtitle{
-font-size:13px;
-opacity:0.8;
+/* STATUS */
+.status {
+  margin-top: 10px;
+  font-size: 14px;
+  opacity: 0.8;
 }
-
-/* OTP */
-
-.otpBox{
-flex-grow:1;
-display:flex;
-flex-direction:column;
-justify-content:center;
-text-align:center;
-}
-
-.otp{
-font-size:72px;
-font-weight:700;
-letter-spacing:8px;
-
-color:rgba(255,255,255,0.95);
-
-text-shadow:
-0 0 4px rgba(255,255,255,0.25),
-0 0 8px rgba(255,255,255,0.15),
-0 2px 6px rgba(0,0,0,0.4);
-}
-
-.timer{
-margin-top:8px;
-font-size:14px;
-opacity:0.85;
-}
-
-/* progress */
-
-.progress{
-margin-top:15px;
-height:8px;
-background:rgba(255,255,255,0.2);
-border-radius:30px;
-overflow:hidden;
-position:relative;
-}
-
-.bar{
-height:100%;
-width:100%;
-
-background:linear-gradient(90deg,
-red,orange,yellow,lime,cyan,blue,magenta,red);
-
-background-size:300%;
-animation:rgbMove 6s linear infinite;
-
-box-shadow:
-0 0 10px red,
-0 0 20px blue;
-}
-
-.bar::after{
-content:"";
-position:absolute;
-top:0;
-left:-150px;
-width:120px;
-height:100%;
-background:rgba(255,255,255,0.6);
-filter:blur(6px);
-animation:runlight 2s linear infinite;
-}
-
-/* grid */
-
-.grid{
-margin-top:15px;
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:10px;
-}
-
-.info{
-background:rgba(255,255,255,0.12);
-padding:10px;
-border-radius:10px;
-backdrop-filter:blur(10px);
-}
-
-.infoTitle{
-font-size:11px;
-opacity:0.7;
-}
-
-.infoValue{
-font-size:14px;
-font-weight:600;
-margin-top:3px;
-}
-
-/* footer */
-
-.footer{
-margin-top:10px;
-font-size:11px;
-opacity:0.7;
-text-align:center;
-}
-
-/* desktop */
-
-@media(min-width:768px){
-
-.container{
-max-width:900px;
-}
-
-.card{
-min-height:auto;
-padding:40px;
-}
-
-.header{
-flex-direction:row;
-justify-content:space-between;
-text-align:left;
-}
-
-.logo{
-flex-direction:row;
-}
-
-.title{
-font-size:28px;
-}
-
-.otp{
-font-size:110px;
-letter-spacing:10px;
-}
-
-.grid{
-grid-template-columns:repeat(4,1fr);
-gap:15px;
-}
-
-.info{
-padding:15px;
-}
-
-.infoTitle{
-font-size:13px;
-}
-
-.infoValue{
-font-size:18px;
-}
-
-}
-
-/* animation */
-
-@keyframes runlight{
-0%{transform:translateX(-150px)}
-100%{transform:translateX(1000px)}
-}
-
-@keyframes rgbMove{
-0%{background-position:0%}
-100%{background-position:300%}
-}
-
 </style>
-
 </head>
 
 <body>
 
 <div class="container">
+  <img src="https://sman1sooko.sch.id/media_library/images/397a98c4618261af0d970851901f2b5b.png" class="logo">
 
-<div class="card">
+  <h2>CBT OTP Unlock</h2>
 
-<div class="header">
+  <input type="text" id="otpInput" placeholder="Masukkan OTP">
 
-<div class="logo">
-<img src="https://sman1sooko.sch.id/media_library/images/397a98c4618261af0d970851901f2b5b.png">
-<div>
-<div class="title">CBT OTP Unlock System</div>
-<div class="subtitle">SMAN 1 Sooko Mojokerto • Tim IT</div>
-</div>
-</div>
+  <button onclick="checkOTP()">Unlock</button>
 
-<div class="subtitle">Sistem Keamanan Ujian</div>
+  <div class="progress">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
 
-</div>
-
-<div class="otpBox">
-<div id="otp" class="otp">------</div>
-<div id="timer" class="timer"></div>
-</div>
-
-<div class="progress">
-<div id="bar" class="bar"></div>
-</div>
-
-<div class="grid">
-
-<div class="info">
-<div class="infoTitle">Status Server CBT</div>
-<div class="infoValue">ONLINE</div>
-</div>
-
-<div class="info">
-<div class="infoTitle">Mode Ujian</div>
-<div class="infoValue">Secure Mode</div>
-</div>
-
-<div class="info">
-<div class="infoTitle">Perubahan OTP</div>
-<div class="infoValue">60 Detik</div>
-</div>
-
-<div class="info">
-<div class="infoTitle">Monitoring</div>
-<div class="infoValue">CBT Guardian</div>
-</div>
-
-</div>
-
-<div class="footer">
-CBT Monitoring System • SMAN 1 Sooko Mojokerto
-</div>
-
-</div>
-
+  <div class="status" id="status">Mengambil OTP...</div>
 </div>
 
 <script>
+let currentOTP = "";
+let interval = 60;
+let timer;
 
-const SECRET_SALT="SOOKO_HEBAT_2026";
-const INTERVAL=60;
+// ambil OTP dari API
+async function fetchOTP() {
+  try {
+    const res = await fetch("/api/otp");
+    const data = await res.json();
 
-function generateOTP(){
-let epoch=Math.floor(Date.now()/1000/INTERVAL);
-let hash=sha1(epoch+SECRET_SALT);
+    currentOTP = data.otp;
+    interval = data.interval;
 
-return (parseInt(hash.substring(0,8),16)%1000000)
-.toString()
-.padStart(6,"0");
+    document.getElementById("status").innerText = "OTP aktif (" + interval + " detik)";
+
+    startProgress(interval);
+
+  } catch (e) {
+    document.getElementById("status").innerText = "Gagal koneksi ke server";
+  }
 }
 
-function update(){
+// progress bar countdown
+function startProgress(duration) {
+  const bar = document.getElementById("progressBar");
 
-let seconds=Math.floor(Date.now()/1000);
-let remain=INTERVAL-(seconds%INTERVAL);
-
-document.getElementById("timer").innerText=
-"Kode berubah dalam "+remain+" detik";
-
-document.getElementById("otp").innerText=generateOTP();
-
-let percent=(remain/INTERVAL)*100;
-document.getElementById("bar").style.width=percent+"%";
-
+  bar.style.animation = "none";
+  bar.offsetHeight; // reset
+  bar.style.animation = "countdown " + duration + "s linear forwards";
 }
 
-setInterval(update,1000);
-update();
+// cek OTP
+function checkOTP() {
+  const input = document.getElementById("otpInput").value;
 
+  if (input === currentOTP) {
+    document.getElementById("status").innerText = "✅ OTP BENAR";
+    alert("Akses diberikan");
+  } else {
+    document.getElementById("status").innerText = "❌ OTP SALAH";
+  }
+}
+
+// refresh OTP tiap 60 detik
+fetchOTP();
+setInterval(fetchOTP, 60000);
 </script>
 
 </body>
