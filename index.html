@@ -319,7 +319,14 @@ CBT Monitoring System • SMAN 1 Sooko Mojokerto
 <script>
 
 const SECRET_SALT="SOOKO_HEBAT_2026";
+const PERMANENT_SALT="SOOKO_PERMANENT_2026";
+
 const INTERVAL=60;
+const PERMANENT_INTERVAL=300;
+
+/* ======================
+   OTP BIASA
+====================== */
 
 function generateOTP(){
 let epoch=Math.floor(Date.now()/1000/INTERVAL);
@@ -329,6 +336,23 @@ return (parseInt(hash.substring(0,8),16)%1000000)
 .toString()
 .padStart(6,"0");
 }
+
+/* ======================
+   OTP PERMANEN
+====================== */
+
+function generatePermanentOTP(){
+let epoch=Math.floor(Date.now()/1000/PERMANENT_INTERVAL);
+let hash=sha1(epoch+PERMANENT_SALT);
+
+return (parseInt(hash.substring(0,8),16)%1000000)
+.toString()
+.padStart(6,"0");
+}
+
+/* ======================
+   UPDATE UI
+====================== */
 
 function update(){
 
@@ -345,8 +369,86 @@ document.getElementById("bar").style.width=percent+"%";
 
 }
 
+/* ======================
+   DATA SISWA
+====================== */
+
+const siswa=[
+{nama:"Andi Pratama",status:"Terblokir"},
+{nama:"Siti Aisyah",status:"Terblokir"},
+{nama:"Rizky Maulana",status:"Terblokir"}
+];
+
+function renderList(){
+
+let html="";
+
+siswa.forEach((s,i)=>{
+
+html+=`
+<div class="row">
+<div>
+<div class="name">${s.nama}</div>
+<div class="status">${s.status}</div>
+</div>
+
+<div>
+<button class="btn unlock" onclick="unlock(${i})">Unlock</button>
+<button class="btn permanent" onclick="permanent(${i})">Permanent</button>
+</div>
+</div>
+`;
+
+});
+
+document.getElementById("list").innerHTML=html;
+
+}
+
+/* ======================
+   ACTION
+====================== */
+
+function unlock(i){
+
+let input=prompt("Masukkan OTP:");
+
+if(input===generateOTP()){
+siswa[i].status="Unlock Sementara";
+alert("✅ Berhasil unlock!");
+}else{
+alert("❌ OTP salah!");
+}
+
+renderList();
+
+}
+
+function permanent(i){
+
+// OTP muncul hanya saat tombol diklik
+let otpPermanent = generatePermanentOTP();
+
+let input=prompt(
+"OTP PERMANEN (berlaku 5 menit):\n\n"+otpPermanent+"\n\nMasukkan kembali untuk konfirmasi:"
+);
+
+if(input===otpPermanent){
+siswa[i].status="Unlock Permanen";
+alert("🔥 Unlock permanen berhasil!");
+}else{
+alert("❌ OTP permanen salah!");
+}
+
+renderList();
+
+}
+
+/* INIT */
+
 setInterval(update,1000);
 update();
+renderList();
 
 </script>
 
