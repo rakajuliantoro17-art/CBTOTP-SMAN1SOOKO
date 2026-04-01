@@ -30,6 +30,7 @@ url("background.jpg");
 background-size:cover;
 background-position:center;
 color:white;
+padding:10px;
 }
 
 body::before{
@@ -44,61 +45,80 @@ rgba(0,255,170,0.25));
 backdrop-filter:blur(6px);
 }
 
-/* CARD */
+/* CONTAINER */
 
 .container{
 position:relative;
 z-index:2;
-max-width:500px;
 width:100%;
-padding:15px;
+max-width:520px;
 }
+
+/* CARD */
 
 .card{
 background:rgba(255,255,255,0.08);
 backdrop-filter:blur(25px);
-border-radius:28px;
-padding:30px;
+border-radius:24px;
+padding:20px;
 text-align:center;
 
 box-shadow:
 0 0 20px rgba(0,150,255,0.2),
-0 0 40px rgba(0,150,255,0.1),
 inset 0 0 15px rgba(255,255,255,0.1);
 }
 
 /* HEADER */
 
+.header{
+display:flex;
+flex-direction:column;
+align-items:center;
+gap:10px;
+margin-bottom:15px;
+}
+
+.logo{
+display:flex;
+align-items:center;
+gap:10px;
+}
+
+.logo img{
+width:40px;
+height:40px;
+object-fit:contain;
+}
+
 .title{
-font-size:22px;
+font-size:18px;
 font-weight:600;
 }
 
 .subtitle{
-font-size:13px;
+font-size:12px;
 opacity:0.7;
-margin-bottom:20px;
 }
 
 /* OTP */
 
 .otp{
-font-size:80px;
+font-size:clamp(40px, 10vw, 70px);
 font-weight:700;
-letter-spacing:8px;
-text-shadow:0 0 10px rgba(0,150,255,0.4);
+letter-spacing:6px;
+word-break:break-all;
 }
 
 .timer{
 margin-top:5px;
-font-size:14px;
+font-size:13px;
 }
 
 /* BAR */
 
 .progress{
 margin-top:10px;
-height:8px;
+height:6px;
 background:rgba(255,255,255,0.1);
 border-radius:30px;
 overflow:hidden;
@@ -118,21 +138,22 @@ justify-content:center;
 }
 
 .pie{
-width:90px;
-height:90px;
+width:70px;
+height:70px;
 border-radius:50%;
 display:flex;
 align-items:center;
 justify-content:center;
-font-size:16px;
+font-size:13px;
 background:conic-gradient(#ff5252 0deg, rgba(255,255,255,0.1) 0deg);
 }
 
 /* BUTTON */
 
 .btn{
-margin-top:20px;
-padding:10px 20px;
+margin-top:15px;
+padding:10px;
+width:100%;
 border:none;
 border-radius:10px;
 background:#ff5252;
@@ -149,26 +170,67 @@ pointer-events:none;
 /* INFO */
 
 .info{
-margin-top:20px;
+margin-top:15px;
 display:grid;
 grid-template-columns:1fr 1fr;
-gap:10px;
+gap:8px;
 }
 
 .box{
 background:rgba(255,255,255,0.08);
-padding:10px;
+padding:8px;
 border-radius:10px;
 }
 
 .small{
-font-size:11px;
+font-size:10px;
 opacity:0.7;
 }
 
 .bold{
-font-size:14px;
+font-size:13px;
 font-weight:600;
+}
+
+/* TABLET */
+
+@media (min-width:600px){
+.card{
+padding:25px;
+}
+
+.pie{
+width:85px;
+height:85px;
+font-size:15px;
+}
+}
+
+/* DESKTOP */
+
+@media (min-width:900px){
+.container{
+max-width:600px;
+}
+
+.card{
+padding:30px;
+}
+
+.title{
+font-size:22px;
+}
+
+.otp{
+font-size:80px;
+letter-spacing:8px;
+}
+
+.pie{
+width:100px;
+height:100px;
+font-size:16px;
+}
 }
 
 </style>
@@ -183,7 +245,6 @@ font-weight:600;
 <div class="logo">
 <img src="https://sman1sooko.sch.id/media_library/images/397a98c4618261af0d970851901f2b5b.png">
 <div>
-  
 <div class="title">CBT OTP Unlock</div>
 <div class="subtitle">SMAN 1 Sooko • Tim IT</div>
 </div>
@@ -239,8 +300,6 @@ const PERMANENT_SECRET="SOOKO_PERMANENT_2026";
 const INTERVAL=60;
 const PERMANENT_INTERVAL=300;
 
-/* OTP */
-
 function generateOTP(){
 let epoch=Math.floor(Date.now()/1000/INTERVAL);
 let hash=sha1(epoch+SECRET);
@@ -252,8 +311,6 @@ let epoch=Math.floor(Date.now()/1000/PERMANENT_INTERVAL);
 let hash=sha1(epoch+PERMANENT_SECRET);
 return (parseInt(hash.substring(0,8),16)%1000000).toString().padStart(6,"0");
 }
-
-/* UPDATE */
 
 function update(){
 
@@ -285,8 +342,6 @@ btn.classList.add("disabled");
 }
 
 }
-
-/* ACTION */
 
 function unlockPermanent(){
 
