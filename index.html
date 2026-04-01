@@ -1,136 +1,89 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-
-<title>CBT OTP Unlock System - SMAN 1 Sooko</title>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sha1/0.6.0/sha1.min.js"></script>
 
 <style>
-
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
-}
-
-body{
-min-height:100vh;
-display:flex;
-align-items:center;
-justify-content:center;
-
-background:
-linear-gradient(rgba(0,0,0,0.35),rgba(0,0,0,0.4)),
-url("background.jpg");
-
-background-size:cover;
-background-position:center;
-color:white;
-padding:10px;
-}
-
-body::before{
-content:"";
+#cbtLockOverlay{
 position:fixed;
+top:0;
+left:0;
 width:100%;
 height:100%;
-background:linear-gradient(135deg,
-rgba(255,0,200,0.25),
-rgba(120,0,255,0.25),
-rgba(0,255,170,0.25));
-backdrop-filter:blur(6px);
-}
-
-/* CONTAINER */
-
-.container{
-position:relative;
-z-index:2;
-width:100%;
-max-width:520px;
+z-index:999999;
+display:none;
+align-items:center;
+justify-content:center;
+background:linear-gradient(135deg,#ff4ecd,#8a5bff,#00ffc8);
+font-family:system-ui;
 }
 
 /* CARD */
-
-.card{
-background:rgba(255,255,255,0.08);
-backdrop-filter:blur(25px);
-border-radius:24px;
-padding:20px;
+.cbtCard{
+background:rgba(255,255,255,0.15);
+backdrop-filter:blur(18px);
+border-radius:20px;
+padding:30px;
+width:90%;
+max-width:420px;
+color:white;
 text-align:center;
-
-box-shadow:
-0 0 20px rgba(0,150,255,0.2),
-inset 0 0 15px rgba(255,255,255,0.1);
+box-shadow:0 0 40px rgba(255,255,255,0.25);
 }
 
-/* HEADER */
-
-.header{
-display:flex;
-flex-direction:column;
-align-items:center;
-gap:10px;
-margin-bottom:15px;
-}
-
-.logo{
-display:flex;
-align-items:center;
-gap:10px;
-}
-
-.logo img{
-width:40px;
-height:40px;
-object-fit:contain;
-}
-
-.title{
-font-size:18px;
-font-weight:600;
-}
-
-.subtitle{
-font-size:12px;
-opacity:0.7;
-}
-
-/* OTP */
-
-.otp{
-font-size:clamp(40px, 10vw, 70px);
+/* TEXT */
+.cbtTitle{
+font-size:22px;
 font-weight:700;
-letter-spacing:6px;
-word-break:break-all;
+margin-bottom:10px;
 }
 
-.timer{
-margin-top:5px;
-font-size:13px;
+.cbtWarn{
+font-size:14px;
+opacity:0.9;
 }
 
-/* BAR */
-
-.progress{
+.cbtCounter{
 margin-top:10px;
-height:6px;
+font-size:15px;
+color:#ffdddd;
+}
+
+/* INPUT */
+#unlockInput{
+margin-top:20px;
+padding:12px;
+width:85%;
+border:none;
+border-radius:10px;
+font-size:16px;
+text-align:center;
+}
+
+/* BUTTON */
+#unlockBtn{
+margin-top:10px;
+padding:12px 25px;
+border:none;
+border-radius:10px;
+background:white;
+color:black;
+font-weight:600;
+cursor:pointer;
+}
+
+/* PROGRESS BAR (BOLD + GRADIENT) */
+.progress{
+margin-top:15px;
+height:12px;
 background:rgba(255,255,255,0.1);
-border-radius:30px;
+border-radius:20px;
 overflow:hidden;
 }
 
 .bar{
 height:100%;
-background:linear-gradient(90deg,#00c6ff,#0072ff);
+background:linear-gradient(90deg,#4facfe,#001f7a);
 }
 
 /* PIE */
-
 .pieWrap{
 margin-top:20px;
 display:flex;
@@ -138,170 +91,75 @@ justify-content:center;
 }
 
 .pie{
-width:70px;
-height:70px;
+width:80px;
+height:80px;
 border-radius:50%;
 display:flex;
 align-items:center;
 justify-content:center;
-font-size:13px;
-background:conic-gradient(#ff5252 0deg, rgba(255,255,255,0.1) 0deg);
-}
-
-/* BUTTON */
-
-.btn{
-margin-top:15px;
-padding:10px;
-width:100%;
-border:none;
-border-radius:10px;
-background:#ff5252;
-color:white;
 font-size:14px;
-cursor:pointer;
+background:conic-gradient(red 0deg, rgba(255,255,255,0.1) 0deg);
 }
 
-.disabled{
-opacity:0.4;
-pointer-events:none;
+.modeInfo{
+margin-top:8px;
+font-size:12px;
+opacity:0.8;
 }
-
-/* INFO */
-
-.info{
-margin-top:15px;
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:8px;
-}
-
-.box{
-background:rgba(255,255,255,0.08);
-padding:8px;
-border-radius:10px;
-}
-
-.small{
-font-size:10px;
-opacity:0.7;
-}
-
-.bold{
-font-size:13px;
-font-weight:600;
-}
-
-/* TABLET */
-
-@media (min-width:600px){
-.card{
-padding:25px;
-}
-
-.pie{
-width:85px;
-height:85px;
-font-size:15px;
-}
-}
-
-/* DESKTOP */
-
-@media (min-width:900px){
-.container{
-max-width:600px;
-}
-
-.card{
-padding:30px;
-}
-
-.title{
-font-size:22px;
-}
-
-.otp{
-font-size:80px;
-letter-spacing:8px;
-}
-
-.pie{
-width:100px;
-height:100px;
-font-size:16px;
-}
-}
-
 </style>
-</head>
 
-<body>
+<div id="cbtLockOverlay">
+<div class="cbtCard">
 
-<div class="container">
-<div class="card">
+<div class="cbtTitle">⚠ PELANGGARAN CBT</div>
 
-<div class="header">
-<div class="logo">
-<img src="https://sman1sooko.sch.id/media_library/images/397a98c4618261af0d970851901f2b5b.png">
-<div>
-<div class="title">CBT OTP Unlock</div>
-<div class="subtitle">SMAN 1 Sooko • Tim IT</div>
-</div>
-</div>
-<div class="subtitle">Secure Mode</div>
+<div class="cbtWarn">
+Anda keluar dari halaman ujian.<br>
+Aktivitas terekam sistem.
 </div>
 
-<div id="otp" class="otp">------</div>
-<div id="timer" class="timer"></div>
+<div class="cbtCounter">
+Pelanggaran: <span id="violationCount">0</span>
+</div>
 
 <div class="progress">
 <div id="bar" class="bar"></div>
 </div>
 
 <div class="pieWrap">
-<div id="pie" class="pie">0</div>
+<div id="pie" class="pie"></div>
 </div>
 
-<button id="btnPermanent" class="btn disabled" onclick="unlockPermanent()">
-Unlock Permanen
-</button>
-
-<div class="info">
-<div class="box">
-<div class="small">Status</div>
-<div class="bold">ONLINE</div>
-</div>
-
-<div class="box">
-<div class="small">Mode</div>
-<div class="bold">Secure</div>
-</div>
-
-<div class="box">
-<div class="small">OTP</div>
-<div class="bold">60 Detik</div>
-</div>
-
-<div class="box">
-<div class="small">Monitoring</div>
-<div class="bold">Active</div>
-</div>
-</div>
+<input id="unlockInput" placeholder="Masukkan OTP Biasa">
+<br>
+<button id="unlockBtn">UNLOCK</button>
 
 </div>
 </div>
 
 <script>
+(function(){
 
+if(!location.href.includes("attempt.php")) return;
+
+/* CONFIG */
 const SECRET="SOOKO_HEBAT_2026";
 const PERMANENT_SECRET="SOOKO_PERMANENT_2026";
 
-const INTERVAL=60;
+const OTP_INTERVAL=60;
 const PERMANENT_INTERVAL=300;
 
+let violation=parseInt(sessionStorage.getItem("cbtViolation")||0);
+let locked=false;
+
+/* DISPLAY */
+function updateDisplay(){
+document.getElementById("violationCount").innerText=violation;
+}
+
+/* OTP */
 function generateOTP(){
-let epoch=Math.floor(Date.now()/1000/INTERVAL);
+let epoch=Math.floor(Date.now()/1000/OTP_INTERVAL);
 let hash=sha1(epoch+SECRET);
 return (parseInt(hash.substring(0,8),16)%1000000).toString().padStart(6,"0");
 }
@@ -312,55 +170,87 @@ let hash=sha1(epoch+PERMANENT_SECRET);
 return (parseInt(hash.substring(0,8),16)%1000000).toString().padStart(6,"0");
 }
 
-function update(){
+/* UPDATE VISUAL */
+function updateVisual(){
 
 let now=Math.floor(Date.now()/1000);
 
-/* OTP utama */
-let remain=INTERVAL-(now%INTERVAL);
-document.getElementById("otp").innerText=generateOTP();
-document.getElementById("timer").innerText="OTP berubah dalam "+remain+" detik";
-document.getElementById("bar").style.width=(remain/INTERVAL)*100+"%";
+/* BAR */
+let remain=OTP_INTERVAL-(now%OTP_INTERVAL);
+document.getElementById("bar").style.width=(remain/OTP_INTERVAL)*100+"%";
 
-/* permanent */
+/* PIE + COLOR TRANSITION */
 let premain=PERMANENT_INTERVAL-(now%PERMANENT_INTERVAL);
+let percent=1-(premain/PERMANENT_INTERVAL);
+let deg=percent*360;
 
-/* pie */
-let deg=(1-(premain/PERMANENT_INTERVAL))*360;
+/* warna dinamis (merah → kuning → hijau) */
+let r = percent < 0.5 ? 255 : Math.floor(255 - (percent-0.5)*2*255);
+let g = percent > 0.5 ? 255 : Math.floor(percent*2*255);
+
+let color = `rgb(${r},${g},0)`;
+
 document.getElementById("pie").style.background=
-`conic-gradient(#ff5252 ${deg}deg, rgba(255,255,255,0.1) ${deg}deg)`;
+`conic-gradient(${color} ${deg}deg, rgba(255,255,255,0.1) ${deg}deg)`;
 
-document.getElementById("pie").innerText=premain+"s";
+}
 
-/* tombol */
-let btn=document.getElementById("btnPermanent");
+/* VIOLATION */
+function triggerViolation(){
 
-if(premain<5){
-btn.classList.remove("disabled");
+if(locked) return;
+
+violation++;
+sessionStorage.setItem("cbtViolation",violation);
+updateDisplay();
+
+locked=true;
+document.getElementById("cbtLockOverlay").style.display="flex";
+
+}
+
+/* UNLOCK */
+document.getElementById("unlockBtn").onclick=function(){
+
+let input=document.getElementById("unlockInput").value;
+
+/* OTP biasa */
+if(input===generateOTP()){
+document.getElementById("cbtLockOverlay").style.display="none";
+locked=false;
+return;
+}
+
+/* kalau gagal → tawarkan OTP permanen */
+let otpPermanent=generatePermanentOTP();
+
+let second=prompt("OTP Permanen:\n"+otpPermanent+"\nMasukkan ulang:");
+
+if(second===otpPermanent){
+document.getElementById("cbtLockOverlay").style.display="none";
+locked=false;
 }else{
-btn.classList.add("disabled");
+alert("Kode salah");
 }
 
-}
+};
 
-function unlockPermanent(){
+/* DETECTION */
+document.addEventListener("visibilitychange",()=>{
+if(document.hidden) triggerViolation();
+});
 
-let otp=generatePermanentOTP();
+window.addEventListener("blur",()=>triggerViolation());
+window.addEventListener("pagehide",()=>triggerViolation());
 
-let input=prompt("OTP PERMANEN:\n"+otp+"\nMasukkan ulang:");
+/* DISABLE */
+document.addEventListener("copy",e=>e.preventDefault());
+document.addEventListener("paste",e=>e.preventDefault());
+document.addEventListener("contextmenu",e=>e.preventDefault());
 
-if(input===otp){
-alert("✅ Unlock permanen berhasil");
-}else{
-alert("❌ OTP salah");
-}
+setInterval(updateVisual,1000);
+updateDisplay();
+updateVisual();
 
-}
-
-setInterval(update,1000);
-update();
-
+})();
 </script>
-
-</body>
-</html>
