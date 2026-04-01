@@ -39,12 +39,10 @@ top:0;
 left:0;
 width:100%;
 height:100%;
-
 background:linear-gradient(135deg,
 rgba(255,0,200,0.25),
 rgba(120,0,255,0.25),
 rgba(0,255,170,0.25));
-
 backdrop-filter:blur(6px);
 z-index:0;
 }
@@ -122,7 +120,7 @@ font-size:14px;
 margin-top:5px;
 }
 
-/* PROGRESS BAR */
+/* PROGRESS */
 
 .progress{
 margin-top:10px;
@@ -150,14 +148,41 @@ margin-top:15px;
 width:80px;
 height:80px;
 border-radius:50%;
-background:conic-gradient(#00c6ff 0deg, rgba(255,255,255,0.1) 0deg);
+background:conic-gradient(#ff5252 0deg, rgba(255,255,255,0.1) 0deg);
 display:flex;
 align-items:center;
 justify-content:center;
 font-size:14px;
 }
 
-/* TABLE */
+/* INFO GRID */
+
+.grid{
+margin-top:20px;
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:10px;
+}
+
+.info{
+background:rgba(255,255,255,0.08);
+padding:10px;
+border-radius:10px;
+text-align:center;
+}
+
+.infoTitle{
+font-size:11px;
+opacity:0.7;
+}
+
+.infoValue{
+font-size:14px;
+font-weight:600;
+margin-top:3px;
+}
+
+/* LIST */
 
 .row{
 display:flex;
@@ -173,21 +198,15 @@ margin-top:10px;
 
 .btn{
 border:none;
-padding:6px 10px;
+padding:6px 12px;
 border-radius:8px;
 font-size:12px;
 cursor:pointer;
 }
 
-.unlock{
-background:#00c853;
-color:white;
-}
-
 .permanent{
 background:#ff5252;
 color:white;
-margin-left:5px;
 }
 
 .disabled{
@@ -207,7 +226,7 @@ pointer-events:none;
 <div class="logo">
 <img src="https://sman1sooko.sch.id/media_library/images/397a98c4618261af0d970851901f2b5b.png">
 <div>
-<div class="title">CBT OTP Unlock</div>
+<div class="title">CBT OTP Unlock System</div>
 <div class="subtitle">SMAN 1 Sooko • Tim IT</div>
 </div>
 </div>
@@ -228,7 +247,30 @@ pointer-events:none;
 <div id="pie" class="pie">0</div>
 </div>
 
-<!-- LIST -->
+<!-- INFO -->
+<div class="grid">
+<div class="info">
+<div class="infoTitle">Status Server</div>
+<div class="infoValue">ONLINE</div>
+</div>
+
+<div class="info">
+<div class="infoTitle">Mode</div>
+<div class="infoValue">Secure</div>
+</div>
+
+<div class="info">
+<div class="infoTitle">OTP Interval</div>
+<div class="infoValue">60s</div>
+</div>
+
+<div class="info">
+<div class="infoTitle">Monitoring</div>
+<div class="infoValue">Active</div>
+</div>
+</div>
+
+<!-- LIST SISWA -->
 <div id="list"></div>
 
 </div>
@@ -278,8 +320,9 @@ html+=`
 </div>
 
 <div>
-<button class="btn unlock" onclick="unlock(${i})">Unlock</button>
-<button id="perm${i}" class="btn permanent disabled" onclick="permanent(${i})">Permanent</button>
+<button id="perm${i}" class="btn permanent disabled" onclick="permanent(${i})">
+Unlock Permanen
+</button>
 </div>
 </div>
 `;
@@ -291,21 +334,6 @@ document.getElementById("list").innerHTML=html;
 }
 
 /* ACTION */
-
-function unlock(i){
-
-let input=prompt("Masukkan OTP:");
-
-if(input===generateOTP()){
-siswa[i].status="Unlock Sementara";
-alert("Berhasil!");
-}else{
-alert("OTP salah!");
-}
-
-render();
-
-}
 
 function permanent(i){
 
@@ -330,23 +358,23 @@ function update(){
 
 let now=Math.floor(Date.now()/1000);
 
-/* OTP timer */
+/* OTP utama */
 let remain=INTERVAL-(now%INTERVAL);
 document.getElementById("otp").innerText=generateOTP();
 document.getElementById("timer").innerText="OTP berubah dalam "+remain+" detik";
 document.getElementById("bar").style.width=(remain/INTERVAL)*100+"%";
 
-/* Permanent timer */
+/* permanent timer */
 let premain=PERMANENT_INTERVAL-(now%PERMANENT_INTERVAL);
 
-/* PIE */
+/* pie */
 let deg=(1-(premain/PERMANENT_INTERVAL))*360;
 document.getElementById("pie").style.background=
 `conic-gradient(#ff5252 ${deg}deg, rgba(255,255,255,0.1) ${deg}deg)`;
 
 document.getElementById("pie").innerText=premain+"s";
 
-/* ENABLE BUTTON */
+/* enable tombol */
 if(premain<5){
 document.querySelectorAll(".permanent").forEach(b=>{
 b.classList.remove("disabled");
