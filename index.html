@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 
-<title>CBT OTP Unlock System - SMAN 1 Sooko</title>
+<title>CBT OTP System - SMAN 1 Sooko</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sha1/0.6.0/sha1.min.js"></script>
 
@@ -35,8 +35,6 @@ color:white;
 body::before{
 content:"";
 position:fixed;
-top:0;
-left:0;
 width:100%;
 height:100%;
 background:linear-gradient(135deg,
@@ -44,14 +42,15 @@ rgba(255,0,200,0.25),
 rgba(120,0,255,0.25),
 rgba(0,255,170,0.25));
 backdrop-filter:blur(6px);
-z-index:0;
 }
+
+/* CARD */
 
 .container{
 position:relative;
 z-index:2;
+max-width:500px;
 width:100%;
-max-width:900px;
 padding:15px;
 }
 
@@ -60,36 +59,15 @@ background:rgba(255,255,255,0.08);
 backdrop-filter:blur(25px);
 border-radius:28px;
 padding:30px;
+text-align:center;
 
 box-shadow:
 0 0 20px rgba(0,150,255,0.2),
 0 0 40px rgba(0,150,255,0.1),
 inset 0 0 15px rgba(255,255,255,0.1);
-
-border:1px solid rgba(255,255,255,0.2);
 }
 
 /* HEADER */
-
-.header{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:20px;
-}
-
-.logo{
-display:flex;
-align-items:center;
-gap:10px;
-}
-
-.logo img{
-height:50px;
-border-radius:10px;
-background:white;
-padding:4px;
-}
 
 .title{
 font-size:22px;
@@ -99,28 +77,24 @@ font-weight:600;
 .subtitle{
 font-size:13px;
 opacity:0.7;
+margin-bottom:20px;
 }
 
 /* OTP */
 
-.otpBox{
-text-align:center;
-margin:20px 0;
-}
-
 .otp{
-font-size:90px;
+font-size:80px;
 font-weight:700;
 letter-spacing:8px;
 text-shadow:0 0 10px rgba(0,150,255,0.4);
 }
 
 .timer{
-font-size:14px;
 margin-top:5px;
+font-size:14px;
 }
 
-/* PROGRESS */
+/* BAR */
 
 .progress{
 margin-top:10px;
@@ -132,86 +106,69 @@ overflow:hidden;
 
 .bar{
 height:100%;
-width:100%;
 background:linear-gradient(90deg,#00c6ff,#0072ff);
 }
 
-/* PIE TIMER */
+/* PIE */
 
 .pieWrap{
+margin-top:20px;
 display:flex;
 justify-content:center;
-margin-top:15px;
 }
 
 .pie{
-width:80px;
-height:80px;
+width:90px;
+height:90px;
 border-radius:50%;
-background:conic-gradient(#ff5252 0deg, rgba(255,255,255,0.1) 0deg);
 display:flex;
 align-items:center;
 justify-content:center;
-font-size:14px;
-}
-
-/* INFO GRID */
-
-.grid{
-margin-top:20px;
-display:grid;
-grid-template-columns:repeat(4,1fr);
-gap:10px;
-}
-
-.info{
-background:rgba(255,255,255,0.08);
-padding:10px;
-border-radius:10px;
-text-align:center;
-}
-
-.infoTitle{
-font-size:11px;
-opacity:0.7;
-}
-
-.infoValue{
-font-size:14px;
-font-weight:600;
-margin-top:3px;
-}
-
-/* LIST */
-
-.row{
-display:flex;
-justify-content:space-between;
-align-items:center;
-background:rgba(255,255,255,0.08);
-padding:12px;
-border-radius:12px;
-margin-top:10px;
+font-size:16px;
+background:conic-gradient(#ff5252 0deg, rgba(255,255,255,0.1) 0deg);
 }
 
 /* BUTTON */
 
 .btn{
+margin-top:20px;
+padding:10px 20px;
 border:none;
-padding:6px 12px;
-border-radius:8px;
-font-size:12px;
-cursor:pointer;
-}
-
-.permanent{
+border-radius:10px;
 background:#ff5252;
 color:white;
+font-size:14px;
+cursor:pointer;
 }
 
 .disabled{
 opacity:0.4;
 pointer-events:none;
+}
+
+/* INFO */
+
+.info{
+margin-top:20px;
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px;
+}
+
+.box{
+background:rgba(255,255,255,0.08);
+padding:10px;
+border-radius:10px;
+}
+
+.small{
+font-size:11px;
+opacity:0.7;
+}
+
+.bold{
+font-size:14px;
+font-weight:600;
 }
 
 </style>
@@ -222,56 +179,45 @@ pointer-events:none;
 <div class="container">
 <div class="card">
 
-<div class="header">
-<div class="logo">
-<img src="https://sman1sooko.sch.id/media_library/images/397a98c4618261af0d970851901f2b5b.png">
-<div>
-<div class="title">CBT OTP Unlock System</div>
-<div class="subtitle">SMAN 1 Sooko • Tim IT</div>
-</div>
-</div>
-<div class="subtitle">Secure Mode</div>
-</div>
+<div class="title">CBT OTP System</div>
+<div class="subtitle">SMAN 1 Sooko • Secure Mode</div>
 
-<div class="otpBox">
 <div id="otp" class="otp">------</div>
 <div id="timer" class="timer"></div>
-</div>
 
 <div class="progress">
 <div id="bar" class="bar"></div>
 </div>
 
-<!-- PIE TIMER -->
 <div class="pieWrap">
 <div id="pie" class="pie">0</div>
 </div>
 
-<!-- INFO -->
-<div class="grid">
-<div class="info">
-<div class="infoTitle">Status Server</div>
-<div class="infoValue">ONLINE</div>
-</div>
+<button id="btnPermanent" class="btn disabled" onclick="unlockPermanent()">
+Unlock Permanen
+</button>
 
 <div class="info">
-<div class="infoTitle">Mode</div>
-<div class="infoValue">Secure</div>
+<div class="box">
+<div class="small">Status</div>
+<div class="bold">ONLINE</div>
 </div>
 
-<div class="info">
-<div class="infoTitle">OTP Interval</div>
-<div class="infoValue">60s</div>
+<div class="box">
+<div class="small">Mode</div>
+<div class="bold">Secure</div>
 </div>
 
-<div class="info">
-<div class="infoTitle">Monitoring</div>
-<div class="infoValue">Active</div>
-</div>
+<div class="box">
+<div class="small">OTP</div>
+<div class="bold">60 Detik</div>
 </div>
 
-<!-- LIST SISWA -->
-<div id="list"></div>
+<div class="box">
+<div class="small">Monitoring</div>
+<div class="bold">Active</div>
+</div>
+</div>
 
 </div>
 </div>
@@ -298,60 +244,6 @@ let hash=sha1(epoch+PERMANENT_SECRET);
 return (parseInt(hash.substring(0,8),16)%1000000).toString().padStart(6,"0");
 }
 
-/* DATA */
-
-const siswa=[
-{nama:"Andi Pratama",status:"Terblokir"},
-{nama:"Siti Aisyah",status:"Terblokir"},
-{nama:"Rizky Maulana",status:"Terblokir"}
-];
-
-function render(){
-
-let html="";
-
-siswa.forEach((s,i)=>{
-
-html+=`
-<div class="row">
-<div>
-<b>${s.nama}</b><br>
-<small>${s.status}</small>
-</div>
-
-<div>
-<button id="perm${i}" class="btn permanent disabled" onclick="permanent(${i})">
-Unlock Permanen
-</button>
-</div>
-</div>
-`;
-
-});
-
-document.getElementById("list").innerHTML=html;
-
-}
-
-/* ACTION */
-
-function permanent(i){
-
-let otp=generatePermanentOTP();
-
-let input=prompt("OTP PERMANEN:\n"+otp+"\nMasukkan ulang:");
-
-if(input===otp){
-siswa[i].status="Unlock Permanen";
-alert("Unlock permanen berhasil!");
-}else{
-alert("OTP salah!");
-}
-
-render();
-
-}
-
 /* UPDATE */
 
 function update(){
@@ -364,7 +256,7 @@ document.getElementById("otp").innerText=generateOTP();
 document.getElementById("timer").innerText="OTP berubah dalam "+remain+" detik";
 document.getElementById("bar").style.width=(remain/INTERVAL)*100+"%";
 
-/* permanent timer */
+/* permanent */
 let premain=PERMANENT_INTERVAL-(now%PERMANENT_INTERVAL);
 
 /* pie */
@@ -374,22 +266,35 @@ document.getElementById("pie").style.background=
 
 document.getElementById("pie").innerText=premain+"s";
 
-/* enable tombol */
+/* tombol */
+let btn=document.getElementById("btnPermanent");
+
 if(premain<5){
-document.querySelectorAll(".permanent").forEach(b=>{
-b.classList.remove("disabled");
-});
+btn.classList.remove("disabled");
 }else{
-document.querySelectorAll(".permanent").forEach(b=>{
-b.classList.add("disabled");
-});
+btn.classList.add("disabled");
+}
+
+}
+
+/* ACTION */
+
+function unlockPermanent(){
+
+let otp=generatePermanentOTP();
+
+let input=prompt("OTP PERMANEN:\n"+otp+"\nMasukkan ulang:");
+
+if(input===otp){
+alert("✅ Unlock permanen berhasil");
+}else{
+alert("❌ OTP salah");
 }
 
 }
 
 setInterval(update,1000);
 update();
-render();
 
 </script>
 
