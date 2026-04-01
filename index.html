@@ -1,48 +1,53 @@
-<script src="https://cdnjs.cloudflare.com/ajax/libs/js-sha1/0.6.0/sha1.min.js"></script>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>CBT OTP Unlock - SMAN 1 Sooko</title>
 
 <style>
-#cbtLockOverlay{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-z-index:999999;
-display:none;
+*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui;}
+
+body{
+min-height:100vh;
+display:flex;
 align-items:center;
 justify-content:center;
-background:linear-gradient(135deg,#ff4ecd,#8a5bff,#00ffc8);
-font-family:system-ui;
-}
 
-.cbtCard{
-background:rgba(255,255,255,0.15);
-backdrop-filter:blur(18px);
-border-radius:20px;
-padding:30px;
-width:90%;
-max-width:420px;
+background:
+linear-gradient(rgba(0,0,0,0.4),rgba(0,0,0,0.4)),
+url("background.jpg");
+
+background-size:cover;
+background-position:center;
 color:white;
-text-align:center;
-box-shadow:0 0 40px rgba(255,255,255,0.25);
 }
 
-.cbtTitle{
-font-size:22px;
-font-weight:700;
+.container{width:100%;max-width:500px;padding:10px;}
+
+.card{
+background:rgba(255,255,255,0.08);
+backdrop-filter:blur(25px);
+border-radius:24px;
+padding:25px;
+text-align:center;
 }
+
+.title{font-size:20px;font-weight:700;}
+.subtitle{font-size:12px;opacity:0.7;}
 
 .otp{
-font-size:40px;
+font-size:60px;
+font-weight:700;
 letter-spacing:6px;
-margin-top:15px;
-font-weight:bold;
+margin-top:10px;
 }
 
 /* BAR */
 .progress{
 margin-top:15px;
-height:14px;
+height:12px;
 background:rgba(255,255,255,0.1);
 border-radius:20px;
 overflow:hidden;
@@ -50,7 +55,7 @@ overflow:hidden;
 
 .bar{
 height:100%;
-background:linear-gradient(90deg,#4facfe,#001f7a);
+background:linear-gradient(90deg,#00c6ff,#001f7a);
 }
 
 /* PIE */
@@ -77,20 +82,21 @@ border-radius:10px;
 font-size:12px;
 }
 </style>
+</head>
 
-<div id="cbtLockOverlay">
-<div class="cbtCard">
+<body>
 
-<div class="cbtTitle">⚠ CBT LOCK</div>
+<div class="container">
+<div class="card">
 
-<div>
-OTP Biasa
-<div id="otpNormal" class="otp">------</div>
-</div>
+<div class="title">CBT OTP Unlock</div>
+<div class="subtitle">SMAN 1 Sooko • Secure Mode</div>
 
-<div id="permanentWrap" style="display:none;">
-OTP Permanen
-<div id="otpPermanent" class="otp">------</div>
+<div id="otp1" class="otp">------</div>
+
+<div id="otp2Wrap" style="display:none;">
+<div style="margin-top:10px;font-size:12px;">OTP Permanen</div>
+<div id="otp2" class="otp">------</div>
 </div>
 
 <div class="progress">
@@ -100,17 +106,26 @@ OTP Permanen
 <div id="pie" class="pie"></div>
 
 <div class="info">
-<div class="box">Status: LOCK</div>
+<div class="box">Status: ONLINE</div>
 <div class="box" id="mode">Mode: Normal</div>
-<div class="box">Monitoring: Aktif</div>
-<div class="box" id="viol">Pelanggaran: 0</div>
+<div class="box">OTP: 60s</div>
+<div class="box">Monitoring: Active</div>
 </div>
 
 </div>
 </div>
 
 <script>
-(function(){
+
+/* SHA1 fallback biar tidak putih */
+function simpleHash(str){
+let h=0;
+for(let i=0;i<str.length;i++){
+h=(h<<5)-h+str.charCodeAt(i);
+h|=0;
+}
+return Math.abs(h).toString(16);
+}
 
 const SECRET="SOOKO_HEBAT_2026";
 const PERM="SOOKO_PERMANENT_2026";
@@ -118,29 +133,24 @@ const PERM="SOOKO_PERMANENT_2026";
 const OTP_INTERVAL=60;
 const PERM_INTERVAL=300;
 
-let violation=parseInt(sessionStorage.getItem("cbtViolation")||0);
-let locked=false;
-
-/* OTP */
 function otp(){
 let e=Math.floor(Date.now()/1000/OTP_INTERVAL);
-let h=sha1(e+SECRET);
+let h=simpleHash(e+SECRET);
 return (parseInt(h.substring(0,8),16)%1000000).toString().padStart(6,"0");
 }
 
 function otp2(){
 let e=Math.floor(Date.now()/1000/PERM_INTERVAL);
-let h=sha1(e+PERM);
+let h=simpleHash(e+PERM);
 return (parseInt(h.substring(0,8),16)%1000000).toString().padStart(6,"0");
 }
 
-/* UPDATE */
 function update(){
 
 let now=Math.floor(Date.now()/1000);
 
-/* OTP */
-document.getElementById("otpNormal").innerText=otp();
+/* OTP biasa */
+document.getElementById("otp1").innerText=otp();
 
 /* BAR */
 let remain=OTP_INTERVAL-(now%OTP_INTERVAL);
@@ -151,7 +161,7 @@ let premain=PERM_INTERVAL-(now%PERM_INTERVAL);
 let percent=1-(premain/PERM_INTERVAL);
 let deg=percent*360;
 
-/* warna */
+/* warna merah → kuning → hijau */
 let r = percent < 0.5 ? 255 : Math.floor(255 - (percent-0.5)*2*255);
 let g = percent > 0.5 ? 255 : Math.floor(percent*2*255);
 
@@ -160,40 +170,19 @@ let color = `rgb(${r},${g},0)`;
 document.getElementById("pie").style.background=
 `conic-gradient(${color} ${deg}deg, rgba(255,255,255,0.1) ${deg}deg)`;
 
-/* OTP permanen muncul */
-if(premain<5){
-document.getElementById("permanentWrap").style.display="block";
-document.getElementById("otpPermanent").innerText=otp2();
+/* OTP permanen muncul otomatis */
+if(premain < 5){
+document.getElementById("otp2Wrap").style.display="block";
+document.getElementById("otp2").innerText=otp2();
 document.getElementById("mode").innerText="Mode: Permanent";
 }
 
 }
 
-/* VIOLATION */
-function trigger(){
-
-if(locked) return;
-
-violation++;
-sessionStorage.setItem("cbtViolation",violation);
-
-document.getElementById("viol").innerText="Pelanggaran: "+violation;
-
-locked=true;
-document.getElementById("cbtLockOverlay").style.display="flex";
-
-}
-
-/* DETEKSI */
-document.addEventListener("visibilitychange",()=>{
-if(document.hidden) trigger();
-});
-
-window.addEventListener("blur",()=>trigger());
-
-/* START */
 setInterval(update,1000);
 update();
 
-})();
 </script>
+
+</body>
+</html>
