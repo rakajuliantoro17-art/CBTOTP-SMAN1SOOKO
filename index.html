@@ -32,8 +32,6 @@ background-position:center;
 color:white;
 }
 
-/* glass overlay */
-
 body::before{
 content:"";
 position:fixed;
@@ -43,35 +41,27 @@ width:100%;
 height:100%;
 
 background:linear-gradient(135deg,
-rgba(255,0,200,0.35),
-rgba(120,0,255,0.35),
-rgba(0,255,170,0.35));
+rgba(255,0,200,0.25),
+rgba(120,0,255,0.25),
+rgba(0,255,170,0.25));
 
-backdrop-filter:blur(5px);
+backdrop-filter:blur(6px);
 z-index:0;
-}  
+}
 
 .container{
 position:relative;
 z-index:2;
 width:100%;
-max-width:420px;
+max-width:900px;
 padding:15px;
 }
 
 .card{
 background:rgba(255,255,255,0.08);
 backdrop-filter:blur(25px);
--webkit-backdrop-filter:blur(25px);
-
 border-radius:28px;
-min-height:80vh;
-
-display:flex;
-flex-direction:column;
-justify-content:space-between;
-
-padding:25px;
+padding:30px;
 
 box-shadow:
 0 0 20px rgba(0,150,255,0.2),
@@ -81,175 +71,128 @@ inset 0 0 15px rgba(255,255,255,0.1);
 border:1px solid rgba(255,255,255,0.2);
 }
 
-/* header */
+/* HEADER */
 
 .header{
 display:flex;
-flex-direction:column;
+justify-content:space-between;
 align-items:center;
-text-align:center;
-gap:10px;
+margin-bottom:20px;
 }
 
 .logo{
 display:flex;
-flex-direction:column;
 align-items:center;
-gap:8px;
+gap:10px;
 }
 
 .logo img{
 height:50px;
-border-radius:12px;
-background:rgba(255,255,255,0.9);
-padding:5px;
+border-radius:10px;
+background:white;
+padding:4px;
 }
 
 .title{
-font-size:20px;
+font-size:22px;
 font-weight:600;
 }
 
 .subtitle{
 font-size:13px;
-opacity:0.8;
+opacity:0.7;
 }
 
 /* OTP */
 
 .otpBox{
-flex-grow:1;
-display:flex;
-flex-direction:column;
-justify-content:center;
 text-align:center;
+margin:20px 0;
 }
 
 .otp{
-font-size:72px;
+font-size:90px;
 font-weight:700;
 letter-spacing:8px;
-
-text-shadow:
-0 0 6px rgba(255,255,255,0.3),
-0 0 12px rgba(0,150,255,0.3);
+text-shadow:0 0 10px rgba(0,150,255,0.4);
 }
 
 .timer{
-margin-top:8px;
 font-size:14px;
-opacity:0.85;
+margin-top:5px;
 }
 
-/* progress */
+/* PROGRESS BAR */
 
 .progress{
-margin-top:15px;
+margin-top:10px;
 height:8px;
 background:rgba(255,255,255,0.1);
 border-radius:30px;
 overflow:hidden;
-position:relative;
 }
 
 .bar{
 height:100%;
 width:100%;
 background:linear-gradient(90deg,#00c6ff,#0072ff);
-box-shadow:0 0 10px rgba(0,150,255,0.6);
-position:relative;
 }
 
-/* running light soft */
+/* PIE TIMER */
 
-.bar::after{
-content:"";
-position:absolute;
-top:0;
-left:-60px;
-width:60px;
-height:100%;
-background:rgba(255,255,255,0.5);
-filter:blur(8px);
-animation:runlight 2s linear infinite;
-}
-
-/* grid */
-
-.grid{
+.pieWrap{
+display:flex;
+justify-content:center;
 margin-top:15px;
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:10px;
 }
 
-.info{
-background:rgba(255,255,255,0.08);
-padding:10px;
-border-radius:10px;
-backdrop-filter:blur(10px);
-}
-
-.infoTitle{
-font-size:11px;
-opacity:0.7;
-}
-
-.infoValue{
+.pie{
+width:80px;
+height:80px;
+border-radius:50%;
+background:conic-gradient(#00c6ff 0deg, rgba(255,255,255,0.1) 0deg);
+display:flex;
+align-items:center;
+justify-content:center;
 font-size:14px;
-font-weight:600;
-margin-top:3px;
 }
 
-/* footer */
+/* TABLE */
 
-.footer{
-margin-top:10px;
-font-size:11px;
-opacity:0.7;
-text-align:center;
-}
-
-/* desktop */
-
-@media(min-width:768px){
-
-.container{max-width:900px;}
-
-.card{min-height:auto;padding:40px;}
-
-.header{
-flex-direction:row;
+.row{
+display:flex;
 justify-content:space-between;
-text-align:left;
+align-items:center;
+background:rgba(255,255,255,0.08);
+padding:12px;
+border-radius:12px;
+margin-top:10px;
 }
 
-.logo{flex-direction:row;}
+/* BUTTON */
 
-.title{font-size:28px;}
-
-.otp{
-font-size:110px;
-letter-spacing:10px;
+.btn{
+border:none;
+padding:6px 10px;
+border-radius:8px;
+font-size:12px;
+cursor:pointer;
 }
 
-.grid{
-grid-template-columns:repeat(4,1fr);
-gap:15px;
+.unlock{
+background:#00c853;
+color:white;
 }
 
-.info{padding:15px;}
-
-.infoTitle{font-size:13px;}
-.infoValue{font-size:18px;}
-
+.permanent{
+background:#ff5252;
+color:white;
+margin-left:5px;
 }
 
-/* animation */
-
-@keyframes runlight{
-0%{transform:translateX(-60px)}
-100%{transform:translateX(400px)}
+.disabled{
+opacity:0.4;
+pointer-events:none;
 }
 
 </style>
@@ -258,21 +201,17 @@ gap:15px;
 <body>
 
 <div class="container">
-
 <div class="card">
 
 <div class="header">
-
 <div class="logo">
 <img src="https://sman1sooko.sch.id/media_library/images/397a98c4618261af0d970851901f2b5b.png">
 <div>
-<div class="title">CBT OTP Unlock System</div>
-<div class="subtitle">SMAN 1 Sooko Mojokerto • Tim IT</div>
+<div class="title">CBT OTP Unlock</div>
+<div class="subtitle">SMAN 1 Sooko • Tim IT</div>
 </div>
 </div>
-
-<div class="subtitle">Sistem Keamanan Ujian</div>
-
+<div class="subtitle">Secure Mode</div>
 </div>
 
 <div class="otpBox">
@@ -284,94 +223,40 @@ gap:15px;
 <div id="bar" class="bar"></div>
 </div>
 
-<div class="grid">
-
-<div class="info">
-<div class="infoTitle">Status Server CBT</div>
-<div class="infoValue">ONLINE</div>
+<!-- PIE TIMER -->
+<div class="pieWrap">
+<div id="pie" class="pie">0</div>
 </div>
 
-<div class="info">
-<div class="infoTitle">Mode Ujian</div>
-<div class="infoValue">Secure Mode</div>
-</div>
-
-<div class="info">
-<div class="infoTitle">Perubahan OTP</div>
-<div class="infoValue">60 Detik</div>
-</div>
-
-<div class="info">
-<div class="infoTitle">Monitoring</div>
-<div class="infoValue">CBT Guardian</div>
-</div>
+<!-- LIST -->
+<div id="list"></div>
 
 </div>
-
-<div class="footer">
-CBT Monitoring System • SMAN 1 Sooko Mojokerto
-</div>
-
-</div>
-
 </div>
 
 <script>
 
-const SECRET_SALT="SOOKO_HEBAT_2026";
-const PERMANENT_SALT="SOOKO_PERMANENT_2026";
+const SECRET="SOOKO_HEBAT_2026";
+const PERMANENT_SECRET="SOOKO_PERMANENT_2026";
 
 const INTERVAL=60;
 const PERMANENT_INTERVAL=300;
 
-/* ======================
-   OTP BIASA
-====================== */
+/* OTP */
 
 function generateOTP(){
 let epoch=Math.floor(Date.now()/1000/INTERVAL);
-let hash=sha1(epoch+SECRET_SALT);
-
-return (parseInt(hash.substring(0,8),16)%1000000)
-.toString()
-.padStart(6,"0");
+let hash=sha1(epoch+SECRET);
+return (parseInt(hash.substring(0,8),16)%1000000).toString().padStart(6,"0");
 }
-
-/* ======================
-   OTP PERMANEN
-====================== */
 
 function generatePermanentOTP(){
 let epoch=Math.floor(Date.now()/1000/PERMANENT_INTERVAL);
-let hash=sha1(epoch+PERMANENT_SALT);
-
-return (parseInt(hash.substring(0,8),16)%1000000)
-.toString()
-.padStart(6,"0");
+let hash=sha1(epoch+PERMANENT_SECRET);
+return (parseInt(hash.substring(0,8),16)%1000000).toString().padStart(6,"0");
 }
 
-/* ======================
-   UPDATE UI
-====================== */
-
-function update(){
-
-let seconds=Math.floor(Date.now()/1000);
-let remain=INTERVAL-(seconds%INTERVAL);
-
-document.getElementById("timer").innerText=
-"Kode berubah dalam "+remain+" detik";
-
-document.getElementById("otp").innerText=generateOTP();
-
-let percent=(remain/INTERVAL)*100;
-document.getElementById("bar").style.width=percent+"%";
-
-}
-
-/* ======================
-   DATA SISWA
-====================== */
+/* DATA */
 
 const siswa=[
 {nama:"Andi Pratama",status:"Terblokir"},
@@ -379,7 +264,7 @@ const siswa=[
 {nama:"Rizky Maulana",status:"Terblokir"}
 ];
 
-function renderList(){
+function render(){
 
 let html="";
 
@@ -388,13 +273,13 @@ siswa.forEach((s,i)=>{
 html+=`
 <div class="row">
 <div>
-<div class="name">${s.nama}</div>
-<div class="status">${s.status}</div>
+<b>${s.nama}</b><br>
+<small>${s.status}</small>
 </div>
 
 <div>
 <button class="btn unlock" onclick="unlock(${i})">Unlock</button>
-<button class="btn permanent" onclick="permanent(${i})">Permanent</button>
+<button id="perm${i}" class="btn permanent disabled" onclick="permanent(${i})">Permanent</button>
 </div>
 </div>
 `;
@@ -405,9 +290,7 @@ document.getElementById("list").innerHTML=html;
 
 }
 
-/* ======================
-   ACTION
-====================== */
+/* ACTION */
 
 function unlock(i){
 
@@ -415,40 +298,70 @@ let input=prompt("Masukkan OTP:");
 
 if(input===generateOTP()){
 siswa[i].status="Unlock Sementara";
-alert("✅ Berhasil unlock!");
+alert("Berhasil!");
 }else{
-alert("❌ OTP salah!");
+alert("OTP salah!");
 }
 
-renderList();
+render();
 
 }
 
 function permanent(i){
 
-// OTP muncul hanya saat tombol diklik
-let otpPermanent = generatePermanentOTP();
+let otp=generatePermanentOTP();
 
-let input=prompt(
-"OTP PERMANEN (berlaku 5 menit):\n\n"+otpPermanent+"\n\nMasukkan kembali untuk konfirmasi:"
-);
+let input=prompt("OTP PERMANEN:\n"+otp+"\nMasukkan ulang:");
 
-if(input===otpPermanent){
+if(input===otp){
 siswa[i].status="Unlock Permanen";
-alert("🔥 Unlock permanen berhasil!");
+alert("Unlock permanen berhasil!");
 }else{
-alert("❌ OTP permanen salah!");
+alert("OTP salah!");
 }
 
-renderList();
+render();
 
 }
 
-/* INIT */
+/* UPDATE */
+
+function update(){
+
+let now=Math.floor(Date.now()/1000);
+
+/* OTP timer */
+let remain=INTERVAL-(now%INTERVAL);
+document.getElementById("otp").innerText=generateOTP();
+document.getElementById("timer").innerText="OTP berubah dalam "+remain+" detik";
+document.getElementById("bar").style.width=(remain/INTERVAL)*100+"%";
+
+/* Permanent timer */
+let premain=PERMANENT_INTERVAL-(now%PERMANENT_INTERVAL);
+
+/* PIE */
+let deg=(1-(premain/PERMANENT_INTERVAL))*360;
+document.getElementById("pie").style.background=
+`conic-gradient(#ff5252 ${deg}deg, rgba(255,255,255,0.1) ${deg}deg)`;
+
+document.getElementById("pie").innerText=premain+"s";
+
+/* ENABLE BUTTON */
+if(premain<5){
+document.querySelectorAll(".permanent").forEach(b=>{
+b.classList.remove("disabled");
+});
+}else{
+document.querySelectorAll(".permanent").forEach(b=>{
+b.classList.add("disabled");
+});
+}
+
+}
 
 setInterval(update,1000);
 update();
-renderList();
+render();
 
 </script>
 
