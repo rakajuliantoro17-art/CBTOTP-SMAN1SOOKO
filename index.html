@@ -8,7 +8,7 @@ left:0;
 width:100%;
 height:100%;
 z-index:999999;
-display:flex; /* langsung tampil */
+display:none;
 align-items:center;
 justify-content:center;
 background:linear-gradient(135deg,#ff4ecd,#8a5bff,#00ffc8);
@@ -30,12 +30,19 @@ box-shadow:0 0 40px rgba(255,255,255,0.25);
 .cbtTitle{
 font-size:22px;
 font-weight:700;
-margin-bottom:10px;
 }
 
+.otp{
+font-size:40px;
+letter-spacing:6px;
+margin-top:15px;
+font-weight:bold;
+}
+
+/* BAR */
 .progress{
 margin-top:15px;
-height:12px;
+height:14px;
 background:rgba(255,255,255,0.1);
 border-radius:20px;
 overflow:hidden;
@@ -46,39 +53,45 @@ height:100%;
 background:linear-gradient(90deg,#4facfe,#001f7a);
 }
 
+/* PIE */
 .pie{
-margin-top:20px;
-width:80px;
-height:80px;
+margin:20px auto;
+width:90px;
+height:90px;
 border-radius:50%;
-margin-left:auto;
-margin-right:auto;
 background:conic-gradient(red 0deg, rgba(255,255,255,0.1) 0deg);
 }
 
-input{
+/* INFO */
+.info{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px;
 margin-top:15px;
-padding:10px;
-width:80%;
-border-radius:10px;
-border:none;
-text-align:center;
 }
 
-button{
-margin-top:10px;
-padding:10px 20px;
-border:none;
+.box{
+background:rgba(255,255,255,0.1);
+padding:8px;
 border-radius:10px;
-background:white;
-cursor:pointer;
+font-size:12px;
 }
 </style>
 
 <div id="cbtLockOverlay">
 <div class="cbtCard">
 
-<div class="cbtTitle">CBT LOCK TEST</div>
+<div class="cbtTitle">⚠ CBT LOCK</div>
+
+<div>
+OTP Biasa
+<div id="otpNormal" class="otp">------</div>
+</div>
+
+<div id="permanentWrap" style="display:none;">
+OTP Permanen
+<div id="otpPermanent" class="otp">------</div>
+</div>
 
 <div class="progress">
 <div id="bar" class="bar"></div>
@@ -86,72 +99,59 @@ cursor:pointer;
 
 <div id="pie" class="pie"></div>
 
-<input id="unlockInput" placeholder="Masukkan OTP">
-<br>
-<button onclick="unlock()">UNLOCK</button>
+<div class="info">
+<div class="box">Status: LOCK</div>
+<div class="box" id="mode">Mode: Normal</div>
+<div class="box">Monitoring: Aktif</div>
+<div class="box" id="viol">Pelanggaran: 0</div>
+</div>
 
 </div>
 </div>
 
 <script>
-
-/* fallback kalau sha1 gagal */
-function safeHash(str){
-if(typeof sha1 !== "undefined"){
-return sha1(str);
-}else{
-return btoa(str); // fallback sederhana
-}
-}
+(function(){
 
 const SECRET="SOOKO_HEBAT_2026";
 const PERM="SOOKO_PERMANENT_2026";
 
+const OTP_INTERVAL=60;
+const PERM_INTERVAL=300;
+
+let violation=parseInt(sessionStorage.getItem("cbtViolation")||0);
+let locked=false;
+
+/* OTP */
 function otp(){
-let e=Math.floor(Date.now()/1000/60);
-return (parseInt(safeHash(e+SECRET).substring(0,8),16)%1000000)
-.toString().padStart(6,"0");
+let e=Math.floor(Date.now()/1000/OTP_INTERVAL);
+let h=sha1(e+SECRET);
+return (parseInt(h.substring(0,8),16)%1000000).toString().padStart(6,"0");
 }
 
 function otp2(){
-let e=Math.floor(Date.now()/1000/300);
-return (parseInt(safeHash(e+PERM).substring(0,8),16)%1000000)
-.toString().padStart(6,"0");
+let e=Math.floor(Date.now()/1000/PERM_INTERVAL);
+let h=sha1(e+PERM);
+return (parseInt(h.substring(0,8),16)%1000000).toString().padStart(6,"0");
 }
 
-function unlock(){
-
-let val=document.getElementById("unlockInput").value;
-
-if(val===otp()){
-alert("OTP biasa benar");
-return;
-}
-
-let second=prompt("OTP permanen:\n"+otp2());
-
-if(second===otp2()){
-alert("OTP permanen benar");
-}else{
-alert("salah semua");
-}
-
-}
-
-/* visual jalan terus */
-setInterval(()=>{
+/* UPDATE */
+function update(){
 
 let now=Math.floor(Date.now()/1000);
 
+/* OTP */
+document.getElementById("otpNormal").innerText=otp();
+
 /* BAR */
-let remain=60-(now%60);
-document.getElementById("bar").style.width=(remain/60)*100+"%";
+let remain=OTP_INTERVAL-(now%OTP_INTERVAL);
+document.getElementById("bar").style.width=(remain/OTP_INTERVAL)*100+"%";
 
 /* PIE */
-let premain=300-(now%300);
-let percent=1-(premain/300);
+let premain=PERM_INTERVAL-(now%PERM_INTERVAL);
+let percent=1-(premain/PERM_INTERVAL);
 let deg=percent*360;
 
+/* warna */
 let r = percent < 0.5 ? 255 : Math.floor(255 - (percent-0.5)*2*255);
 let g = percent > 0.5 ? 255 : Math.floor(percent*2*255);
 
@@ -160,6 +160,40 @@ let color = `rgb(${r},${g},0)`;
 document.getElementById("pie").style.background=
 `conic-gradient(${color} ${deg}deg, rgba(255,255,255,0.1) ${deg}deg)`;
 
-},1000);
+/* OTP permanen muncul */
+if(premain<5){
+document.getElementById("permanentWrap").style.display="block";
+document.getElementById("otpPermanent").innerText=otp2();
+document.getElementById("mode").innerText="Mode: Permanent";
+}
 
+}
+
+/* VIOLATION */
+function trigger(){
+
+if(locked) return;
+
+violation++;
+sessionStorage.setItem("cbtViolation",violation);
+
+document.getElementById("viol").innerText="Pelanggaran: "+violation;
+
+locked=true;
+document.getElementById("cbtLockOverlay").style.display="flex";
+
+}
+
+/* DETEKSI */
+document.addEventListener("visibilitychange",()=>{
+if(document.hidden) trigger();
+});
+
+window.addEventListener("blur",()=>trigger());
+
+/* START */
+setInterval(update,1000);
+update();
+
+})();
 </script>
