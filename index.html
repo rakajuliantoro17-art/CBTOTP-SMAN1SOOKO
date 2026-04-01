@@ -8,14 +8,13 @@ left:0;
 width:100%;
 height:100%;
 z-index:999999;
-display:none;
+display:flex; /* langsung tampil */
 align-items:center;
 justify-content:center;
 background:linear-gradient(135deg,#ff4ecd,#8a5bff,#00ffc8);
 font-family:system-ui;
 }
 
-/* CARD */
 .cbtCard{
 background:rgba(255,255,255,0.15);
 backdrop-filter:blur(18px);
@@ -28,48 +27,12 @@ text-align:center;
 box-shadow:0 0 40px rgba(255,255,255,0.25);
 }
 
-/* TEXT */
 .cbtTitle{
 font-size:22px;
 font-weight:700;
 margin-bottom:10px;
 }
 
-.cbtWarn{
-font-size:14px;
-opacity:0.9;
-}
-
-.cbtCounter{
-margin-top:10px;
-font-size:15px;
-color:#ffdddd;
-}
-
-/* INPUT */
-#unlockInput{
-margin-top:20px;
-padding:12px;
-width:85%;
-border:none;
-border-radius:10px;
-font-size:16px;
-text-align:center;
-}
-
-/* BUTTON */
-#unlockBtn{
-margin-top:10px;
-padding:12px 25px;
-border:none;
-border-radius:10px;
-background:white;
-color:black;
-font-weight:600;
-cursor:pointer;
-}
-
-/* PROGRESS BAR (BOLD + GRADIENT) */
 .progress{
 margin-top:15px;
 height:12px;
@@ -83,108 +46,112 @@ height:100%;
 background:linear-gradient(90deg,#4facfe,#001f7a);
 }
 
-/* PIE */
-.pieWrap{
-margin-top:20px;
-display:flex;
-justify-content:center;
-}
-
 .pie{
+margin-top:20px;
 width:80px;
 height:80px;
 border-radius:50%;
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:14px;
+margin-left:auto;
+margin-right:auto;
 background:conic-gradient(red 0deg, rgba(255,255,255,0.1) 0deg);
 }
 
-.modeInfo{
-margin-top:8px;
-font-size:12px;
-opacity:0.8;
+input{
+margin-top:15px;
+padding:10px;
+width:80%;
+border-radius:10px;
+border:none;
+text-align:center;
+}
+
+button{
+margin-top:10px;
+padding:10px 20px;
+border:none;
+border-radius:10px;
+background:white;
+cursor:pointer;
 }
 </style>
 
 <div id="cbtLockOverlay">
 <div class="cbtCard">
 
-<div class="cbtTitle">⚠ PELANGGARAN CBT</div>
-
-<div class="cbtWarn">
-Anda keluar dari halaman ujian.<br>
-Aktivitas terekam sistem.
-</div>
-
-<div class="cbtCounter">
-Pelanggaran: <span id="violationCount">0</span>
-</div>
+<div class="cbtTitle">CBT LOCK TEST</div>
 
 <div class="progress">
 <div id="bar" class="bar"></div>
 </div>
 
-<div class="pieWrap">
 <div id="pie" class="pie"></div>
-</div>
 
-<input id="unlockInput" placeholder="Masukkan OTP Biasa">
+<input id="unlockInput" placeholder="Masukkan OTP">
 <br>
-<button id="unlockBtn">UNLOCK</button>
+<button onclick="unlock()">UNLOCK</button>
 
 </div>
 </div>
 
 <script>
-(function(){
 
-if(!location.href.includes("attempt.php")) return;
+/* fallback kalau sha1 gagal */
+function safeHash(str){
+if(typeof sha1 !== "undefined"){
+return sha1(str);
+}else{
+return btoa(str); // fallback sederhana
+}
+}
 
-/* CONFIG */
 const SECRET="SOOKO_HEBAT_2026";
-const PERMANENT_SECRET="SOOKO_PERMANENT_2026";
+const PERM="SOOKO_PERMANENT_2026";
 
-const OTP_INTERVAL=60;
-const PERMANENT_INTERVAL=300;
-
-let violation=parseInt(sessionStorage.getItem("cbtViolation")||0);
-let locked=false;
-
-/* DISPLAY */
-function updateDisplay(){
-document.getElementById("violationCount").innerText=violation;
+function otp(){
+let e=Math.floor(Date.now()/1000/60);
+return (parseInt(safeHash(e+SECRET).substring(0,8),16)%1000000)
+.toString().padStart(6,"0");
 }
 
-/* OTP */
-function generateOTP(){
-let epoch=Math.floor(Date.now()/1000/OTP_INTERVAL);
-let hash=sha1(epoch+SECRET);
-return (parseInt(hash.substring(0,8),16)%1000000).toString().padStart(6,"0");
+function otp2(){
+let e=Math.floor(Date.now()/1000/300);
+return (parseInt(safeHash(e+PERM).substring(0,8),16)%1000000)
+.toString().padStart(6,"0");
 }
 
-function generatePermanentOTP(){
-let epoch=Math.floor(Date.now()/1000/PERMANENT_INTERVAL);
-let hash=sha1(epoch+PERMANENT_SECRET);
-return (parseInt(hash.substring(0,8),16)%1000000).toString().padStart(6,"0");
+function unlock(){
+
+let val=document.getElementById("unlockInput").value;
+
+if(val===otp()){
+alert("OTP biasa benar");
+return;
 }
 
-/* UPDATE VISUAL */
-function updateVisual(){
+let second=prompt("OTP permanen:\n"+otp2());
+
+if(second===otp2()){
+alert("OTP permanen benar");
+}else{
+alert("salah semua");
+}
+
+}
+
+/* visual jalan terus */
+setInterval(()=>{
 
 let now=Math.floor(Date.now()/1000);
 
 /* BAR */
-let remain=OTP_INTERVAL-(now%OTP_INTERVAL);
-document.getElementById("bar").style.width=(remain/OTP_INTERVAL)*100+"%";
+let remain=60-(now%60);
+document.getElementById("bar").style.width=(remain/60)*100+"%";
 
-/* PIE + COLOR TRANSITION */
-let premain=PERMANENT_INTERVAL-(now%PERMANENT_INTERVAL);
-let percent=1-(premain/PERMANENT_INTERVAL);
+/* PIE */
+let premain=300-(now%300);
+let percent=1-(premain/300);
 let deg=percent*360;
 
-/* warna dinamis (merah → kuning → hijau) */
 let r = percent < 0.5 ? 255 : Math.floor(255 - (percent-0.5)*2*255);
 let g = percent > 0.5 ? 255 : Math.floor(percent*2*255);
 
@@ -193,64 +160,6 @@ let color = `rgb(${r},${g},0)`;
 document.getElementById("pie").style.background=
 `conic-gradient(${color} ${deg}deg, rgba(255,255,255,0.1) ${deg}deg)`;
 
-}
+},1000);
 
-/* VIOLATION */
-function triggerViolation(){
-
-if(locked) return;
-
-violation++;
-sessionStorage.setItem("cbtViolation",violation);
-updateDisplay();
-
-locked=true;
-document.getElementById("cbtLockOverlay").style.display="flex";
-
-}
-
-/* UNLOCK */
-document.getElementById("unlockBtn").onclick=function(){
-
-let input=document.getElementById("unlockInput").value;
-
-/* OTP biasa */
-if(input===generateOTP()){
-document.getElementById("cbtLockOverlay").style.display="none";
-locked=false;
-return;
-}
-
-/* kalau gagal → tawarkan OTP permanen */
-let otpPermanent=generatePermanentOTP();
-
-let second=prompt("OTP Permanen:\n"+otpPermanent+"\nMasukkan ulang:");
-
-if(second===otpPermanent){
-document.getElementById("cbtLockOverlay").style.display="none";
-locked=false;
-}else{
-alert("Kode salah");
-}
-
-};
-
-/* DETECTION */
-document.addEventListener("visibilitychange",()=>{
-if(document.hidden) triggerViolation();
-});
-
-window.addEventListener("blur",()=>triggerViolation());
-window.addEventListener("pagehide",()=>triggerViolation());
-
-/* DISABLE */
-document.addEventListener("copy",e=>e.preventDefault());
-document.addEventListener("paste",e=>e.preventDefault());
-document.addEventListener("contextmenu",e=>e.preventDefault());
-
-setInterval(updateVisual,1000);
-updateDisplay();
-updateVisual();
-
-})();
 </script>
