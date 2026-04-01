@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 
-<title>CBT OTP Unlock - SMAN 1 Sooko</title>
+<title>CBT OTP Unlock System - SMAN 1 Sooko</title>
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:system-ui;}
@@ -23,6 +23,24 @@ background-size:cover;
 background-position:center;
 color:white;
 }
+/* overlay */
+
+body::before{
+content:"";
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+
+background:linear-gradient(135deg,
+rgba(255,0,200,0.35),
+rgba(120,0,255,0.35),
+rgba(0,255,170,0.35));
+
+backdrop-filter:blur(5px);
+z-index:0;
+}
 
 .container{width:100%;max-width:500px;padding:10px;}
 
@@ -34,8 +52,40 @@ padding:25px;
 text-align:center;
 }
 
-.title{font-size:20px;font-weight:700;}
-.subtitle{font-size:12px;opacity:0.7;}
+/* header */
+
+.header{
+display:flex;
+flex-direction:column;
+align-items:center;
+text-align:center;
+gap:10px;
+}
+
+.logo{
+display:flex;
+flex-direction:column;
+align-items:center;
+gap:8px;
+}
+
+.logo img{
+height:50px;
+border-radius:12px;
+background:rgba(255,255,255,0.85);
+padding:5px;
+box-shadow:0 0 10px rgba(255,255,255,0.3);
+}
+
+.title{
+font-size:20px;
+font-weight:600;
+}
+
+.subtitle{
+font-size:13px;
+opacity:0.8;
+}
 
 .otp{
 font-size:60px;
@@ -68,30 +118,125 @@ background:conic-gradient(red 0deg, rgba(255,255,255,0.1) 0deg);
 }
 
 /* INFO */
-.info{
+/* grid */
+
+.grid{
+margin-top:15px;
 display:grid;
 grid-template-columns:1fr 1fr;
 gap:10px;
-margin-top:15px;
 }
 
-.box{
-background:rgba(255,255,255,0.1);
-padding:8px;
+.info{
+background:rgba(255,255,255,0.12);
+padding:10px;
 border-radius:10px;
-font-size:12px;
+backdrop-filter:blur(10px);
 }
+
+.infoTitle{
+font-size:11px;
+opacity:0.7;
+}
+
+.infoValue{
+font-size:14px;
+font-weight:600;
+margin-top:3px;
+}
+
+/* footer */
+
+.footer{
+margin-top:10px;
+font-size:11px;
+opacity:0.7;
+text-align:center;
+}
+
+/* desktop */
+
+@media(min-width:768px){
+
+.container{
+max-width:900px;
+}
+
+.card{
+min-height:auto;
+padding:40px;
+}
+
+.header{
+flex-direction:row;
+justify-content:space-between;
+text-align:left;
+}
+
+.logo{
+flex-direction:row;
+}
+
+.title{
+font-size:28px;
+}
+
+.otp{
+font-size:110px;
+letter-spacing:10px;
+}
+
+.grid{
+grid-template-columns:repeat(4,1fr);
+gap:15px;
+}
+
+.info{
+padding:15px;
+}
+
+.infoTitle{
+font-size:13px;
+}
+
+.infoValue{
+font-size:18px;
+}
+
+}
+
+/* animation */
+
+@keyframes runlight{
+0%{transform:translateX(-150px)}
+100%{transform:translateX(1000px)}
+}
+
+@keyframes rgbMove{
+0%{background-position:0%}
+100%{background-position:300%}
+}
+
 </style>
 </head>
 
 <body>
 
 <div class="container">
+
 <div class="card">
 
-<div class="title">CBT OTP Unlock</div>
-<div class="subtitle">SMAN 1 Sooko • Secure Mode</div>
+<div class="header">
 
+<div class="logo">
+<img src="https://sman1sooko.sch.id/media_library/images/397a98c4618261af0d970851901f2b5b.png">
+<div>
+<div class="title">CBT OTP Unlock System</div>
+<div class="subtitle">SMAN 1 Sooko Mojokerto • Tim IT</div>
+</div>
+
+<div class="subtitle">Sistem Keamanan Ujian</div>
+  
 <div id="otp1" class="otp">------</div>
 
 <div id="otp2Wrap" style="display:none;">
@@ -105,13 +250,34 @@ font-size:12px;
 
 <div id="pie" class="pie"></div>
 
+<div class="grid">
+
 <div class="info">
-<div class="box">Status: ONLINE</div>
-<div class="box" id="mode">Mode: Normal</div>
-<div class="box">OTP: 60s</div>
-<div class="box">Monitoring: Active</div>
+<div class="infoTitle">Status Server CBT</div>
+<div class="infoValue">ONLINE</div>
 </div>
 
+<div class="info">
+<div class="infoTitle">Mode Ujian</div>
+<div class="infoValue">Secure Mode</div>
+</div>
+
+<div class="info">
+<div class="infoTitle">Perubahan OTP</div>
+<div class="infoValue">60 Detik</div>
+</div>
+
+<div class="info">
+<div class="infoTitle">Monitoring</div>
+<div class="infoValue">CBT Guardian</div>
+</div>
+
+</div>
+
+<div class="footer">
+CBT Monitoring System • SMAN 1 Sooko Mojokerto
+</div>
+  
 </div>
 </div>
 
