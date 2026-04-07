@@ -15,17 +15,14 @@ display:flex;
 align-items:center;
 justify-content:center;
 padding:15px;
-
 background:
 linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.6)),
 url("background.jpg");
-
 background-size:cover;
 background-position:center;
 color:white;
 }
 
-/* GLASS OVERLAY */
 body::before{
 content:"";
 position:fixed;
@@ -38,7 +35,6 @@ backdrop-filter:blur(8px);
 z-index:0;
 }
 
-/* CONTAINER */
 .container{
 position:relative;
 z-index:2;
@@ -46,7 +42,6 @@ width:100%;
 max-width:1100px;
 }
 
-/* CARD */
 .card{
 background:rgba(255,255,255,0.08);
 backdrop-filter:blur(25px);
@@ -55,7 +50,6 @@ padding:25px;
 box-shadow:0 0 30px rgba(0,0,0,0.4);
 }
 
-/* HEADER */
 .header{
 display:flex;
 justify-content:space-between;
@@ -88,14 +82,12 @@ font-size:13px;
 opacity:0.7;
 }
 
-/* MAIN GRID */
 .main{
 display:grid;
 grid-template-columns:1fr;
 gap:20px;
 }
 
-/* OTP SECTION */
 .otpBox{
 text-align:center;
 padding:20px;
@@ -115,7 +107,6 @@ opacity:0.7;
 margin-top:10px;
 }
 
-/* PROGRESS */
 .progress{
 margin-top:15px;
 height:14px;
@@ -129,7 +120,6 @@ height:100%;
 background:linear-gradient(90deg,#00c6ff,#001f7a);
 }
 
-/* PIE */
 .pie{
 margin:20px auto;
 width:100px;
@@ -137,7 +127,6 @@ height:100px;
 border-radius:50%;
 }
 
-/* GRID INFO */
 .grid{
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
@@ -161,7 +150,6 @@ font-weight:600;
 margin-top:5px;
 }
 
-/* FOOTER */
 .footer{
 margin-top:15px;
 text-align:center;
@@ -169,21 +157,14 @@ font-size:12px;
 opacity:0.6;
 }
 
-/* DESKTOP */
 @media(min-width:768px){
 .main{
 grid-template-columns:1.2fr 1fr;
 }
-
-.otpBox{
-padding:30px;
-}
-
 .otp{
 font-size:90px;
 }
 }
-
 </style>
 </head>
 
@@ -192,7 +173,6 @@ font-size:90px;
 <div class="container">
 <div class="card">
 
-<!-- HEADER -->
 <div class="header">
 <div class="logo">
 <img src="https://sman1sooko.sch.id/media_library/images/397a98c4618261af0d970851901f2b5b.png">
@@ -205,19 +185,12 @@ font-size:90px;
 <div class="subtitle">Secure Exam Mode</div>
 </div>
 
-<!-- MAIN -->
 <div class="main">
 
-<!-- LEFT -->
 <div class="otpBox">
 
 <div id="otp1" class="otp">------</div>
-<div class="otpLabel">OTP Utama</div>
-
-<div id="otp2Wrap" style="display:none;">
-<div class="otpLabel">OTP Permanen</div>
-<div id="otp2" class="otp">------</div>
-</div>
+<div class="otpLabel">OTP Aktif</div>
 
 <div class="progress">
 <div id="bar" class="bar"></div>
@@ -227,7 +200,6 @@ font-size:90px;
 
 </div>
 
-<!-- RIGHT -->
 <div class="grid">
 
 <div class="info">
@@ -237,7 +209,7 @@ font-size:90px;
 
 <div class="info">
 <div class="infoTitle">Mode Ujian</div>
-<div id="mode" class="infoValue">Secure</div>
+<div class="infoValue">Secure</div>
 </div>
 
 <div class="info">
@@ -263,7 +235,7 @@ CBT Monitoring System • SMAN 1 Sooko Mojokerto
 
 <script>
 
-/* HASH SAFE */
+/* HASH */
 function simpleHash(str){
 let h=0;
 for(let i=0;i<str.length;i++){
@@ -274,28 +246,21 @@ return Math.abs(h).toString(16);
 }
 
 const SECRET="SOOKO_HEBAT_2026";
-const PERM="SOOKO_PERMANENT_2026";
-
 const OTP_INTERVAL=60;
-const PERM_INTERVAL=300;
 
 function otp(){
 let e=Math.floor(Date.now()/1000/OTP_INTERVAL);
 let h=simpleHash(e+SECRET);
-return (parseInt(h.substring(0,8),16)%1000000).toString().padStart(6,"0");
-}
-
-function otp2(){
-let e=Math.floor(Date.now()/1000/PERM_INTERVAL);
-let h=simpleHash(e+PERM);
-return (parseInt(h.substring(0,8),16)%1000000).toString().padStart(6,"0");
+return (parseInt(h.substring(0,8),16)%1000000)
+.toString()
+.padStart(6,"0");
 }
 
 function update(){
 
 let now=Math.floor(Date.now()/1000);
 
-/* OTP utama */
+/* OTP */
 document.getElementById("otp1").innerText=otp();
 
 /* BAR */
@@ -303,11 +268,10 @@ let remain=OTP_INTERVAL-(now%OTP_INTERVAL);
 document.getElementById("bar").style.width=(remain/OTP_INTERVAL)*100+"%";
 
 /* PIE */
-let premain=PERM_INTERVAL-(now%PERM_INTERVAL);
-let percent=1-(premain/PERM_INTERVAL);
+let percent=1-(remain/OTP_INTERVAL);
 let deg=percent*360;
 
-/* warna */
+/* warna merah → hijau */
 let r = percent < 0.5 ? 255 : Math.floor(255 - (percent-0.5)*2*255);
 let g = percent > 0.5 ? 255 : Math.floor(percent*2*255);
 
@@ -315,13 +279,6 @@ let color = `rgb(${r},${g},0)`;
 
 document.getElementById("pie").style.background=
 `conic-gradient(${color} ${deg}deg, rgba(255,255,255,0.1) ${deg}deg)`;
-
-/* OTP permanen */
-if(premain < 5){
-document.getElementById("otp2Wrap").style.display="block";
-document.getElementById("otp2").innerText=otp2();
-document.getElementById("mode").innerText="Permanent";
-}
 
 }
 
