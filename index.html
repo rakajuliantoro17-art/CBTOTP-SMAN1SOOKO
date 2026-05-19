@@ -235,35 +235,32 @@ CBT Monitoring System • SMAN 1 Sooko Mojokerto
 
 <script>
 
-/* HASH */
-function simpleHash(str){
+function hash(str){
 let h=0;
 for(let i=0;i<str.length;i++){
 h=(h<<5)-h+str.charCodeAt(i);
 h|=0;
 }
-return Math.abs(h).toString(16);
+return Math.abs(h);
 }
 
 const SECRET="SOOKO_HEBAT_2026";
 const OTP_INTERVAL=60;
 
+/* OTP MASTER */
 function otp(){
-let e=Math.floor(Date.now()/1000/OTP_INTERVAL);
-let h=simpleHash(e+SECRET);
-return (parseInt(h.substring(0,8),16)%1000000)
-.toString()
-.padStart(6,"0");
+let t=Math.floor(Date.now()/1000/OTP_INTERVAL);
+let h=hash(t + SECRET);
+return (h % 1000000).toString().padStart(6,"0");
 }
 
 function update(){
 
-let now=Math.floor(Date.now()/1000);
-
 /* OTP */
-document.getElementById("otp1").innerText=otp();
+document.getElementById("otp1").innerText = otp();
 
 /* BAR */
+let now=Math.floor(Date.now()/1000);
 let remain=OTP_INTERVAL-(now%OTP_INTERVAL);
 document.getElementById("bar").style.width=(remain/OTP_INTERVAL)*100+"%";
 
@@ -271,13 +268,12 @@ document.getElementById("bar").style.width=(remain/OTP_INTERVAL)*100+"%";
 let percent=1-(remain/OTP_INTERVAL);
 let deg=percent*360;
 
-/* warna merah → hijau */
 let r = percent < 0.5 ? 255 : Math.floor(255 - (percent-0.5)*2*255);
 let g = percent > 0.5 ? 255 : Math.floor(percent*2*255);
 
 let color = `rgb(${r},${g},0)`;
 
-document.getElementById("pie").style.background=
+document.getElementById("pie").style.background =
 `conic-gradient(${color} ${deg}deg, rgba(255,255,255,0.1) ${deg}deg)`;
 
 }
